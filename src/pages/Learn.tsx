@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Volume2, BookOpen, CheckCircle2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { motion, AnimatePresence } from "framer-motion";
+import Footer from "@/components/Footer";
 
 // Sample Tulu Lipi data - In production, this would come from a database
 const vowels = [
@@ -46,51 +48,73 @@ const LetterCard = ({ letter, transliteration, pronunciation, example, isComplet
   const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <Card
-      className="p-6 hover:shadow-card transition-all duration-300 hover:-translate-y-1 cursor-pointer bg-gradient-card border-border/50 relative overflow-hidden group"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+    <motion.div
+      whileHover={{ scale: 1.05, y: -5 }}
+      transition={{ duration: 0.2 }}
     >
-      {isCompleted && (
-        <div className="absolute top-2 right-2">
-          <CheckCircle2 className="w-5 h-5 text-success" />
-        </div>
-      )}
-      
-      <div className="text-center">
-        {/* Large Letter Display */}
-        <div className="text-6xl font-bold mb-4 bg-gradient-hero bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300">
-          {letter}
-        </div>
+      <Card
+        className="p-6 hover:shadow-card transition-all duration-300 cursor-pointer bg-gradient-card border-border/50 relative overflow-hidden group"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        {isCompleted && (
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            className="absolute top-2 right-2"
+          >
+            <CheckCircle2 className="w-5 h-5 text-success" />
+          </motion.div>
+        )}
+        
+        <div className="text-center">
+          {/* Large Letter Display */}
+          <motion.div
+            className="text-6xl font-bold mb-4 bg-gradient-hero bg-clip-text text-transparent"
+            whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
+            transition={{ duration: 0.3 }}
+          >
+            {letter}
+          </motion.div>
 
-        {/* Transliteration */}
-        <div className="text-lg font-semibold text-foreground mb-2">
-          {transliteration}
-        </div>
+          {/* Transliteration */}
+          <div className="text-lg font-semibold text-foreground mb-2">
+            {transliteration}
+          </div>
 
-        {/* Pronunciation Badge */}
-        <Badge variant="secondary" className="mb-4">
-          {pronunciation}
-        </Badge>
+          {/* Pronunciation Badge */}
+          <Badge variant="secondary" className="mb-4">
+            {pronunciation}
+          </Badge>
 
-        {/* Example Word */}
-        <div className="text-sm text-muted-foreground mb-4 min-h-[40px]">
-          {example}
-        </div>
+          {/* Example Word */}
+          <div className="text-sm text-muted-foreground mb-4 min-h-[40px]">
+            {example}
+          </div>
 
-        {/* Action Buttons */}
-        <div className={`flex gap-2 justify-center transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
-          <Button size="sm" variant="outline" className="gap-2">
-            <Volume2 className="w-4 h-4" />
-            Listen
-          </Button>
-          <Button size="sm" variant="default" className="gap-2">
-            <BookOpen className="w-4 h-4" />
-            Practice
-          </Button>
+          {/* Action Buttons */}
+          <AnimatePresence>
+            {isHovered && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                className="flex gap-2 justify-center"
+              >
+                <Button size="sm" variant="outline" className="gap-2">
+                  <Volume2 className="w-4 h-4" />
+                  Listen
+                </Button>
+                <Button size="sm" variant="default" className="gap-2">
+                  <BookOpen className="w-4 h-4" />
+                  Practice
+                </Button>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-      </div>
-    </Card>
+      </Card>
+    </motion.div>
   );
 };
 
@@ -187,9 +211,11 @@ const Learn = () => {
               </div>
               <p className="text-muted-foreground mb-6">Letters Learned</p>
               <div className="w-full bg-muted rounded-full h-3 overflow-hidden">
-                <div 
-                  className="bg-gradient-hero h-full rounded-full transition-all duration-500"
-                  style={{ width: `${(5 / (vowels.length + consonants.length)) * 100}%` }}
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${(5 / (vowels.length + consonants.length)) * 100}%` }}
+                  transition={{ duration: 1, delay: 0.5 }}
+                  className="bg-gradient-hero h-full rounded-full"
                 />
               </div>
               <p className="text-sm text-muted-foreground mt-4">
@@ -199,6 +225,8 @@ const Learn = () => {
           </Card>
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 };

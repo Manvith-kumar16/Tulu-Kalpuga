@@ -2,10 +2,12 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Volume2, BookOpen, CheckCircle2 } from "lucide-react";
+import { BookOpen, CheckCircle2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion, AnimatePresence } from "framer-motion";
 import Footer from "@/components/Footer";
+import { AudioPlayer } from "@/components/AudioPlayer";
+import { getAudioForLetter } from "@/data/tuluLetterAudio";
 
 // Sample Tulu Lipi data - In production, this would come from a database
 const vowels = [
@@ -42,10 +44,12 @@ interface LetterCardProps {
   pronunciation: string;
   example: string;
   isCompleted?: boolean;
+  onPractice?: () => void;
 }
 
-const LetterCard = ({ letter, transliteration, pronunciation, example, isCompleted }: LetterCardProps) => {
+const LetterCard = ({ letter, transliteration, pronunciation, example, isCompleted, onPractice }: LetterCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
+  const audioSrc = getAudioForLetter(letter);
 
   return (
     <motion.div
@@ -101,11 +105,20 @@ const LetterCard = ({ letter, transliteration, pronunciation, example, isComplet
                 exit={{ opacity: 0, y: 10 }}
                 className="flex gap-2 justify-center"
               >
-                <Button size="sm" variant="outline" className="gap-2">
-                  <Volume2 className="w-4 h-4" />
-                  Listen
-                </Button>
-                <Button size="sm" variant="default" className="gap-2">
+                {audioSrc && (
+                  <AudioPlayer
+                    audioSrc={audioSrc}
+                    letter={letter}
+                    variant="outline"
+                    size="sm"
+                  />
+                )}
+                <Button
+                  size="sm"
+                  variant="default"
+                  className="gap-2"
+                  onClick={onPractice}
+                >
                   <BookOpen className="w-4 h-4" />
                   Practice
                 </Button>

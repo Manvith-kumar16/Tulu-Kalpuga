@@ -9,9 +9,15 @@ import Footer from "@/components/Footer";
 import { AudioPlayer } from "@/components/AudioPlayer";
 import { getAudioForLetter } from "@/data/tuluLetterAudio";
 
-// Sample Tulu Lipi data - In production, this would come from a database
+// ✅ Sample Tulu Lipi data
 const vowels = [
-  { letter: "ಅ", transliteration: "a", pronunciation: "ah", example: "ಅಮ್ಮ (Mother)" },
+  {
+    letter: "A",
+    transliteration: "a",
+    pronunciation: "ah",
+    example: "ಅಮ್ಮ (Mother)",
+    image: "/images/A.png", // ✅ relative path for web
+  },
   { letter: "ಆ", transliteration: "ā", pronunciation: "aa", example: "ಆಕಾಶ (Sky)" },
   { letter: "ಇ", transliteration: "i", pronunciation: "i", example: "ಇಲ್ಲಿ (Here)" },
   { letter: "ಈ", transliteration: "ī", pronunciation: "ee", example: "ಈಜು (Swim)" },
@@ -43,19 +49,25 @@ interface LetterCardProps {
   transliteration: string;
   pronunciation: string;
   example: string;
+  image?: string;
   isCompleted?: boolean;
   onPractice?: () => void;
 }
 
-const LetterCard = ({ letter, transliteration, pronunciation, example, isCompleted, onPractice }: LetterCardProps) => {
+const LetterCard = ({
+  letter,
+  transliteration,
+  pronunciation,
+  example,
+  image,
+  isCompleted,
+  onPractice,
+}: LetterCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const audioSrc = getAudioForLetter(letter);
 
   return (
-    <motion.div
-      whileHover={{ scale: 1.05, y: -5 }}
-      transition={{ duration: 0.2 }}
-    >
+    <motion.div whileHover={{ scale: 1.05, y: -5 }} transition={{ duration: 0.2 }}>
       <Card
         className="p-6 hover:shadow-card transition-all duration-300 cursor-pointer bg-gradient-card border-border/50 relative overflow-hidden group"
         onMouseEnter={() => setIsHovered(true)}
@@ -70,21 +82,28 @@ const LetterCard = ({ letter, transliteration, pronunciation, example, isComplet
             <CheckCircle2 className="w-5 h-5 text-success" />
           </motion.div>
         )}
-        
+
         <div className="text-center">
-          {/* Large Letter Display */}
-          <motion.div
-            className="text-6xl font-bold mb-4 bg-gradient-hero bg-clip-text text-transparent"
-            whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
-            transition={{ duration: 0.3 }}
-          >
-            {letter}
-          </motion.div>
+          {/* ✅ If image is provided, show image */}
+          {image ? (
+            <motion.img
+              src={image}
+              alt={letter}
+              className="w-24 h-24 mx-auto mb-4 rounded-lg object-contain shadow-md"
+              whileHover={{ scale: 1.05 }}
+            />
+          ) : (
+            <motion.div
+              className="text-6xl font-bold mb-4 bg-gradient-hero bg-clip-text text-transparent"
+              whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
+              transition={{ duration: 0.3 }}
+            >
+              {letter}
+            </motion.div>
+          )}
 
           {/* Transliteration */}
-          <div className="text-lg font-semibold text-foreground mb-2">
-            {transliteration}
-          </div>
+          <div className="text-lg font-semibold text-foreground mb-2">{transliteration}</div>
 
           {/* Pronunciation Badge */}
           <Badge variant="secondary" className="mb-4">
@@ -92,11 +111,9 @@ const LetterCard = ({ letter, transliteration, pronunciation, example, isComplet
           </Badge>
 
           {/* Example Word */}
-          <div className="text-sm text-muted-foreground mb-4 min-h-[40px]">
-            {example}
-          </div>
+          <div className="text-sm text-muted-foreground mb-4 min-h-[40px]">{example}</div>
 
-          {/* Action Buttons */}
+          {/* Buttons on hover */}
           <AnimatePresence>
             {isHovered && (
               <motion.div
@@ -106,19 +123,9 @@ const LetterCard = ({ letter, transliteration, pronunciation, example, isComplet
                 className="flex gap-2 justify-center"
               >
                 {audioSrc && (
-                  <AudioPlayer
-                    audioSrc={audioSrc}
-                    letter={letter}
-                    variant="outline"
-                    size="sm"
-                  />
+                  <AudioPlayer audioSrc={audioSrc} letter={letter} variant="outline" size="sm" />
                 )}
-                <Button
-                  size="sm"
-                  variant="default"
-                  className="gap-2"
-                  onClick={onPractice}
-                >
+                <Button size="sm" variant="default" className="gap-2" onClick={onPractice}>
                   <BookOpen className="w-4 h-4" />
                   Practice
                 </Button>
@@ -142,7 +149,8 @@ const Learn = () => {
               Learn Tulu Lipi
             </h1>
             <p className="text-muted-foreground text-lg animate-slide-up">
-              Master the beautiful Tulu script letter by letter. Click on any letter to see stroke order and hear pronunciation.
+              Master the beautiful Tulu script letter by letter. Click on any letter to see stroke
+              order and hear pronunciation.
             </p>
           </div>
         </div>
@@ -165,6 +173,7 @@ const Learn = () => {
               </TabsList>
             </div>
 
+            {/* ✅ Vowels Tab */}
             <TabsContent value="vowels" className="animate-fade-in">
               <div className="mb-6">
                 <h2 className="text-2xl font-bold mb-2">Vowels (ಸ್ವರಗಳು)</h2>
@@ -175,37 +184,30 @@ const Learn = () => {
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {vowels.map((vowel, index) => (
                   <div
-                    key={vowel.letter}
+                    key={index}
                     className="animate-scale-in"
                     style={{ animationDelay: `${index * 50}ms` }}
                   >
-                    <LetterCard
-                      {...vowel}
-                      isCompleted={index < 3}
-                    />
+                    <LetterCard {...vowel} isCompleted={index < 3} />
                   </div>
                 ))}
               </div>
             </TabsContent>
 
+            {/* ✅ Consonants Tab */}
             <TabsContent value="consonants" className="animate-fade-in">
               <div className="mb-6">
                 <h2 className="text-2xl font-bold mb-2">Consonants (ವ್ಯಂಜನಗಳು)</h2>
-                <p className="text-muted-foreground">
-                  Learn the consonant sounds in Tulu Lipi
-                </p>
+                <p className="text-muted-foreground">Learn the consonant sounds in Tulu Lipi</p>
               </div>
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {consonants.map((consonant, index) => (
                   <div
-                    key={consonant.letter}
+                    key={index}
                     className="animate-scale-in"
                     style={{ animationDelay: `${index * 50}ms` }}
                   >
-                    <LetterCard
-                      {...consonant}
-                      isCompleted={index < 2}
-                    />
+                    <LetterCard {...consonant} isCompleted={index < 2} />
                   </div>
                 ))}
               </div>
@@ -214,7 +216,7 @@ const Learn = () => {
         </div>
       </section>
 
-      {/* Progress Section */}
+      {/* ✅ Progress Section */}
       <section className="py-12 bg-muted/30">
         <div className="container mx-auto px-4">
           <Card className="max-w-2xl mx-auto p-8 bg-gradient-card shadow-card border-border/50">
@@ -226,7 +228,9 @@ const Learn = () => {
               <div className="w-full bg-muted rounded-full h-3 overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
-                  animate={{ width: `${(5 / (vowels.length + consonants.length)) * 100}%` }}
+                  animate={{
+                    width: `${(5 / (vowels.length + consonants.length)) * 100}%`,
+                  }}
                   transition={{ duration: 1, delay: 0.5 }}
                   className="bg-gradient-hero h-full rounded-full"
                 />

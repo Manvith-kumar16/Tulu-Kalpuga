@@ -12,22 +12,73 @@ import WritingPractice from "./WritingPractice";
 
 // ✅ Tulu Lipi letters
 const vowels = [
-  { letter: "ಅ", transliteration: "a", pronunciation: "a", example: "ಅಮ್ಮ (Mother)", image: "/images/Vowels/a.png" },
-  { letter: "ಆ", transliteration: "ā", pronunciation: "aa", example: "ಆಕಾಶ (Sky)", image: "/images/Vowels/AA.png" },
-  { letter: "ಇ", transliteration: "i", pronunciation: "i", example: "ಇಲ್ಲಿ (Here)", image: "/images/Vowels/i.png" },
-  { letter: "ಈ", transliteration: "ī", pronunciation: "ee", example: "ಈಜು (Swim)", image: "/images/Vowels/ii.png" },
-  { letter: "ಉ", transliteration: "u", pronunciation: "u", example: "ಉಪ್ಪು (Salt)", image: "/images/Vowels/u.png" },
-  { letter: "ಊ", transliteration: "ū", pronunciation: "oo", example: "ಊರು (Village)", image: "/images/Vowels/uu.png" },
-  { letter: "ಋ", transliteration: "ṛ", pronunciation: "ri", example: "ಋತು (Season)", image: "/images/Vowels/r.png" },
-  { letter: "ಎ", transliteration: "e", pronunciation: "e", example: "ಎಲೆ (Leaf)", image: "/images/Vowels/e.png" },
-  { letter: "ಏ", transliteration: "ē", pronunciation: "ay", example: "ಏನು (What)", image: "/images/Vowels/ee.png" },
-  { letter: "ಐ", transliteration: "ai", pronunciation: "ai", example: "ಐದು (Five)", image: "/images/Vowels/Ai.png" },
-  { letter: "ಒ", transliteration: "o", pronunciation: "o", example: "ಒಳ್ಳೆ (Good)", image: "/images/Vowels/o.png" },
-  { letter: "ಓ", transliteration: "ō", pronunciation: "oh", example: "ಓಟ (Run)", image: "/images/Vowels/oo.png" },
-  { letter: "ಔ", transliteration: "au", pronunciation: "ow", example: "ಔಷಧಿ (Medicine)", image: "/images/Vowels/au.png" },
+  { letter: "ಅ", transliteration: "a", pronunciation: "a", example: "ಅರಿ", image: "/images/Vowels/a.png" },
+  { letter: "ಆ", transliteration: "ā", pronunciation: "aa", example: "ಆಜಾ", image: "/images/Vowels/aa.png" },
+  { letter: "ಇ", transliteration: "i", pronunciation: "i", example: "ಇಲೆ", image: "/images/Vowels/i.png" },
+  { letter: "ಈ", transliteration: "ī", pronunciation: "ii", example: "ಈದು", image: "/images/Vowels/ii.png" },
+  { letter: "ಉ", transliteration: "u", pronunciation: "u", example: "ಉಲೆ", image: "/images/Vowels/u.png" },
+  { letter: "ಊ", transliteration: "ū", pronunciation: "uu", example: "ಊಡ", image: "/images/Vowels/uu.png" },
+
+  { letter: "ಋ", transliteration: "ṛ", pronunciation: "r", example: "ಋಷಿ", image: "/images/Vowels/r.png" },
+  { letter: "ೠ", transliteration: "ṝ", pronunciation: "rr", example: "ೠಕ್ಷ", image: "/images/Vowels/rr.png" },
+
+  { letter: "ಎ", transliteration: "e", pronunciation: "e", example: "ಎರು", image: "/images/Vowels/e.png" },
+  { letter: "ಏ", transliteration: "ē", pronunciation: "ee", example: "ಏಳು", image: "/images/Vowels/ee.png" },
+
+   { letter: "ಎೕ", transliteration: "ē", pronunciation: "e_", example: "ಏಕ್ಕಲೆ", image: "/images/Vowels/e_.png" },
+  { letter: "ಏೕ", transliteration: "ē̄", pronunciation: "ee_", example: "ಏಲ", image: "/images/Vowels/ee_.png" },
+
+  { letter: "ಐ", transliteration: "ai", pronunciation: "ai", example: "ಐನು", image: "/images/Vowels/ai.png" },
+
+  { letter: "ಒ", transliteration: "o", pronunciation: "o", example: "ಒಡು", image: "/images/Vowels/o.png" },
+  { letter: "ಓ", transliteration: "ō", pronunciation: "oo", example: "ಓಲು", image: "/images/Vowels/oo.png" },
+
+  { letter: "ಔ", transliteration: "au", pronunciation: "au", example: "ಔಗು", image: "/images/Vowels/au.png" },
+
+  { letter: "ಅಂ", transliteration: "aṃ", pronunciation: "am", example: "ಅಂಬಟೆ", image: "/images/Vowels/am.png" },
+  { letter: "ಅಃ", transliteration: "aḥ", pronunciation: "ah", example: "ಅಃ", image: "/images/Vowels/ah.png" }
 ];
 
-const consonants = [ { letter: "ಕ", transliteration: "ka", pronunciation: "ka", example: "ಕಣ್ಣು (Eye)",image: "/images/Consonants/ka.png" }, { letter: "ಖ", transliteration: "kha", pronunciation: "kha", example: "ಖತ್ರಿ (Danger)",image: "/images/Consonants/kha.png" }, { letter: "ಗ", transliteration: "ga", pronunciation: "ga", example: "ಗಾಳಿ (Wind)",image: "/images/Consonants/ga.png" }, { letter: "ಘ", transliteration: "gha", pronunciation: "gha", example: "ಘಟನೆ (Event)" ,image: "/images/Consonants/gha.png" }, { letter: "ಙ", transliteration: "ṅa", pronunciation: "nga", example: "ಅಂಗ (Part)", image: "/images/Consonants/nga.png" }, { letter: "ಚ", transliteration: "cha", pronunciation: "cha", example: "ಚಂದ್ರ (Moon)",image: "/images/Consonants/ca.png" }, { letter: "ಛ", transliteration: "chha", pronunciation: "chha", example: "ಛಾಯಾ (Shadow)" ,image: "/images/Consonants/cha.png"}, { letter: "ಜ", transliteration: "ja", pronunciation: "ja", example: "ಜಲ (Water)" ,image: "/images/Consonants/ja.png"}, { letter: "ಝ", transliteration: "jha", pronunciation: "jha", example: "ಝರಿ (Waterfall)",image: "/images/Consonants/jha.png" }, { letter: "ಞ", transliteration: "ña", pronunciation: "nya", example: "ಜ್ಞಾನ (Knowledge)", image: "/images/Consonants/nya.png" }, { letter: "ಟ", transliteration: "ṭa", pronunciation: "ta", example: "ಟೊಕ್ಕು (Top)", image: "/images/Consonants/ta.png" }, { letter: "ಠ", transliteration: "ṭha", pronunciation: "tha", example: "ಠೇವಣಿ (Deposit)", image: "/images/Consonants/taa.png" }, { letter: "ಡ", transliteration: "ḍa", pronunciation: "da", example: "ಡಬ್ಬಿ (Box)", image: "/images/Consonants/da.png" }, { letter: "ಢ", transliteration: "ḍha", pronunciation: "dha", example: "ಢಾಣಿ (Shield)" , image: "/images/Consonants/daa.png"}, { letter: "ಣ", transliteration: "ṇa", pronunciation: "na", example: "ಮಣಿಯ (Jewel)", image: "/images/Consonants/na1.png" }, { letter: "ತ", transliteration: "ta", pronunciation: "tha", example: "ತರಕಾರಿ (Vegetable)", image: "/images/Consonants/tha.png" }, { letter: "ಥ", transliteration: "tha", pronunciation: "ttha", example: "ಥಂಡ (Cold)", image: "/images/Consonants/thaa.png" }, { letter: "ದ", transliteration: "da", pronunciation: "da", example: "ದೀಪ (Lamp)", image: "/images/Consonants/dha.png" }, { letter: "ಧ", transliteration: "dha", pronunciation: "dha", example: "ಧನುಷ್ (Bow)", image: "/images/Consonants/dhaa.png" }, { letter: "ನ", transliteration: "na", pronunciation: "na", example: "ನದಿ (River)", image: "/images/Consonants/Na.png" }, { letter: "ಪ", transliteration: "pa", pronunciation: "pa", example: "ಪತ್ರ (Letter)", image: "/images/Consonants/Pa.png" }, { letter: "ಫ", transliteration: "pha", pronunciation: "pha", example: "ಫಲ (Fruit)", image: "/images/Consonants/pha.png" }, { letter: "ಬ", transliteration: "ba", pronunciation: "ba", example: "ಬಳ್ಳಿ (Creeper)", image: "/images/Consonants/Ba.png" }, { letter: "ಭ", transliteration: "bha", pronunciation: "bha", example: "ಭೂಮಿ (Earth)", image: "/images/Consonants/Bha.png" }, { letter: "ಮ", transliteration: "ma", pronunciation: "ma", example: "ಮನೆ (House)", image: "/images/Consonants/Ma.png" }, { letter: "ಯ", transliteration: "ya", pronunciation: "ya", example: "ಯಾನ (Vehicle)", image: "/images/Consonants/Ya.png" }, { letter: "ರ", transliteration: "ra", pronunciation: "ra", example: "ರಾತ್ರಿ (Night)", image: "/images/Consonants/Ra.png" }, { letter: "ಲ", transliteration: "la", pronunciation: "la", example: "ಲೋಟ (Cup)", image: "/images/Consonants/La.png" }, { letter: "ವ", transliteration: "va", pronunciation: "va", example: "ವನ (Forest)", image: "/images/Consonants/Va.png" }, { letter: "ಶ", transliteration: "śa", pronunciation: "sha", example: "ಶಕ್ತಿ (Power)", image: "/images/Consonants/Sha.png" }, { letter: "ಷ", transliteration: "ṣa", pronunciation: "shha", example: "ಷಟ್ಕೋಣ (Hexagon)", image: "/images/Consonants/SHha.png" }, { letter: "ಸ", transliteration: "sa", pronunciation: "sa", example: "ಸಮುದ್ರ (Sea)", image: "/images/Consonants/Sa.png" }, { letter: "ಹ", transliteration: "ha", pronunciation: "ha", example: "ಹಣ್ಣು (Fruit)", image: "/images/Consonants/Ha.png" }, { letter: "ಳ", transliteration: "ḷa", pronunciation: "la", example: "ಬೆಳ್ಳುಳ್ಳಿ (Garlic)", image: "/images/Consonants/LLa.png" }, { letter: "ಕ್ಷ", transliteration: "kṣa", pronunciation: "ksha", example: "ಕ್ಷಮೆ (Forgive)", image: "/images/Consonants/Ksha.png" }, { letter: "ಜ್ಞ", transliteration: "jña", pronunciation: "gya", example: "ಜ್ಞಾನ (Wisdom)", image: "/images/Consonants/ya.png" } ];
+
+const consonants = [
+  { letter: "ಕ", transliteration: "ka", pronunciation: "ka", example: "ಕರ (Hand)", image: "/images/Consonants/ka.png" },
+  { letter: "ಖ", transliteration: "kha", pronunciation: "kha", example: "ಖಡ್ಗ (Sword)", image: "/images/Consonants/kha.png" },
+  { letter: "ಗ", transliteration: "ga", pronunciation: "ga", example: "ಗಗ್ಗರ (Anklet)", image: "/images/Consonants/ga.png" },
+  { letter: "ಘ", transliteration: "gha", pronunciation: "gha", example: "ಘಟ (Pot)", image: "/images/Consonants/gha.png" },
+  { letter: "ಙ", transliteration: "ṅa", pronunciation: "nga", example: "ಬಣ್ಣ (Colour)", image: "/images/Consonants/nga.png" },
+  { letter: "ಚ", transliteration: "ca", pronunciation: "cha", example: "ಚಿಲುಮೆ (Squirrel)", image: "/images/Consonants/ca.png" },
+  { letter: "ಛ", transliteration: "cha", pronunciation: "chha", example: "ಛತ್ರ (Umbrella)", image: "/images/Consonants/cha.png" },
+  { letter: "ಜ", transliteration: "ja", pronunciation: "ja", example: "ಜಪಮಾಲೆ (Rosary)", image: "/images/Consonants/ja.png" },
+  { letter: "ಝ", transliteration: "jha", pronunciation: "jha", example: "ಝರಿ (Drum)", image: "/images/Consonants/jha.png" },
+  { letter: "ಞ", transliteration: "ña", pronunciation: "nya", example: "ಞಾ (Letter)", image: "/images/Consonants/nya.png" },
+  { letter: "ಟ", transliteration: "ṭa", pronunciation: "ta", example: "ಟಪಾಲು (Post)", image: "/images/Consonants/ta.png" },
+  { letter: "ಠ", transliteration: "ṭha", pronunciation: "ṭha", example: "ಠ (Sound)", image: "/images/Consonants/taa.png" },
+  { letter: "ಡ", transliteration: "ḍa", pronunciation: "da", example: "ಡಬ್ಬಣ (Stick)", image: "/images/Consonants/da.png" },
+  { letter: "ಢ", transliteration: "ḍha", pronunciation: "dha", example: "ಢಮರು (Drum)", image: "/images/Consonants/daa.png" },
+  { letter: "ಣ", transliteration: "ṇa", pronunciation: "ṇa", example: "ಣ (Letter)", image: "/images/Consonants/na1.png" },
+  { letter: "ತ", transliteration: "ta", pronunciation: "ta", example: "ತುಂಬು (Ant)", image: "/images/Consonants/tha.png" },
+  { letter: "ಥ", transliteration: "tha", pronunciation: "tha", example: "ಥರ್ಮಾಸ್ (Thermos)", image: "/images/Consonants/thaa.png" },
+  { letter: "ದ", transliteration: "da", pronunciation: "da", example: "ದಡಪಾಳೆ (Cactus)", image: "/images/Consonants/dha.png" },
+  { letter: "ಧ", transliteration: "dha", pronunciation: "dha", example: "ಧ (Letter)", image: "/images/Consonants/dhaa.png" },
+  { letter: "ನ", transliteration: "na", pronunciation: "na", example: "ನಕ್ಷೆ (Map)", image: "/images/Consonants/Na.png" },
+  { letter: "ಪ", transliteration: "pa", pronunciation: "pa", example: "ಪಗಡಿ (Turban)", image: "/images/Consonants/Pa.png" },
+  { letter: "ಫ", transliteration: "pha", pronunciation: "pha", example: "ಫಲ (Fruit)", image: "/images/Consonants/pha.png" },
+  { letter: "ಬ", transliteration: "ba", pronunciation: "ba", example: "ಬಚ್ಚಿರೆ (Leaf)", image: "/images/Consonants/Ba.png" },
+  { letter: "ಭ", transliteration: "bha", pronunciation: "bha", example: "ಭರಣಿ (Jar)", image: "/images/Consonants/Bha.png" },
+  { letter: "ಮ", transliteration: "ma", pronunciation: "ma", example: "ಮಡಲು (Palm Leaf)", image: "/images/Consonants/Ma.png" },
+  { letter: "ಯ", transliteration: "ya", pronunciation: "ya", example: "ಯಮ (God of Death)", image: "/images/Consonants/Ya.png" },
+  { letter: "ರ", transliteration: "ra", pronunciation: "ra", example: "ರಾಕ್ಷಸ (Demon)", image: "/images/Consonants/Ra.png" },
+  { letter: "ಲ", transliteration: "la", pronunciation: "la", example: "ಲತ್ತನೆ (Grass)", image: "/images/Consonants/La.png" },
+  { letter: "ವ", transliteration: "va", pronunciation: "va", example: "ವನಸ (Vegetable)", image: "/images/Consonants/Va.png" },
+  { letter: "ಶ", transliteration: "śa", pronunciation: "sha", example: "ಶರ್ಬತ್ (Juice)", image: "/images/Consonants/Sha.png" },
+  { letter: "ಷ", transliteration: "ṣa", pronunciation: "ṣa", example: "ಷಣ್ಮುಖೆ (Ṣaṇmukhe)", image: "/images/Consonants/SHha.png" },
+  { letter: "ಸ", transliteration: "sa", pronunciation: "sa", example: "ಸರಪೋಲಿ (Chain)", image: "/images/Consonants/Sa.png" },
+  { letter: "ಹ", transliteration: "ha", pronunciation: "ha", example: "ಹ (Letter)", image: "/images/Consonants/Ha.png" },
+  { letter: "ಳ", transliteration: "ḷa", pronunciation: "ḷa", example: "ಳ (Letter)", image: "/images/Consonants/LLa.png" },
+  { letter: "ೞ", transliteration: "ṟa", pronunciation: "ṟa", example: "ೞ (Letter)", image: "/images/Consonants/raa.png" },
+  { letter: "ಳ", transliteration: "ḻa", pronunciation: "ḻa", example: "ḻ (Letter)", image: "/images/Consonants/laa.png" }
+];
+
 
 interface LetterCardProps {
   letter: string;

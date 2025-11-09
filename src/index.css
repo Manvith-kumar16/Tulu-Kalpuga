@@ -4,94 +4,119 @@
 
 @layer base {
   :root {
-    /* --- Base Colors (Light Mode) --- */
-    --background: 24 30% 96%; /* #FBF4EE - Soft Ivory */
-    --foreground: 20 20% 15%; /* Rich Brown */
+    /* ---------- LIGHT THEME (USING GIVEN PALETTE) ---------- */
 
-    --card: 24 30% 98%;
-    --card-foreground: 20 20% 15%;
+    --background: 80 100% 94%; /* soft cream background */
+    --foreground: 11 96% 20%; /* deep red-brown text */
 
-    --popover: 24 30% 98%;
-    --popover-foreground: 20 20% 15%;
+    --card: 45 100% 96%; /* light cream card */
+    --card-foreground: 11 96% 20%;
 
-    --primary: 20 85% 65%; /* #F28C5A - Coral Orange */
-    --primary-foreground: 24 30% 98%;
-    --primary-glow: 20 90% 70%;
+    --popover: 45 100% 96%;
+    --popover-foreground: 11 96% 20%;
 
-    --secondary: 40 70% 70%; /* #EBC06F - Warm Gold */
-    --secondary-foreground: 20 20% 15%;
+    --primary: 38 96% 60%; /* vibrant orange-yellow (#FCB53B) */
+    --primary-foreground: 45 100% 96%;
 
-    --muted: 25 15% 70%; /* #9D8370 */
-    --muted-foreground: 20 20% 30%;
+    --secondary: 77 35% 45%; /* green (#84994F) */
+    --secondary-foreground: 45 100% 96%;
 
-    --accent: 30 90% 85%; /* #FFD3A5 */
-    --accent-foreground: 20 20% 15%;
+    --muted: 45 20% 80%; /* soft yellow */
+    --muted-foreground: 11 40% 30%;
 
-    --success: 150 35% 50%; /* #64B78C */
-    --success-foreground: 24 30% 98%;
+    --accent: 38 96% 60%; /* same as primary */
+    --accent-foreground: 45 100% 96%;
 
-    --destructive: 5 70% 55%; /* #E0564C */
-    --destructive-foreground: 24 30% 98%;
+    --success: 77 33% 45%; /* green */
+    --success-foreground: 45 100% 96%;
 
-    --border: 24 15% 85%;
-    --input: 24 15% 85%;
-    --ring: 20 85% 65%;
+    --destructive: 11 96% 32%; /* deep red (#A72703) */
+    --destructive-foreground: 45 100% 96%;
+
+    --border: 45 30% 85%;
+    --input: 45 30% 85%;
+    --ring: 38 96% 60%;
 
     --radius: 0.75rem;
 
-    /* --- Gradients & Shadows --- */
-    --gradient-hero: linear-gradient(135deg, hsl(20 85% 60%), hsl(40 70% 65%));
-    --gradient-card: linear-gradient(180deg, hsl(24 30% 98%), hsl(20 15% 92%));
-    --gradient-accent: linear-gradient(135deg, hsl(40 70% 65%), hsl(20 85% 60%));
+    /* ---------- GRADIENTS & SHADOWS ---------- */
+    --gradient-hero: linear-gradient(
+      135deg,
+      hsl(45 100% 90%),
+      hsl(38, 72%, 76%)
+    );
 
-    --shadow-soft: 0 2px 10px -2px hsl(20 20% 20% / 0.1);
-    --shadow-card: 0 4px 18px -4px hsl(20 20% 20% / 0.12);
-    --shadow-glow: 0 0 20px hsl(20 85% 65% / 0.25);
+    --gradient-card: linear-gradient(
+      180deg,
+      hsl(45 100% 96%),
+      hsl(45 70% 88%)
+    );
 
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --gradient-accent: linear-gradient(
+      135deg,
+      hsl(38 96% 65%),
+      hsl(45 100% 80%)
+    );
+
+    --shadow-soft: 0 2px 12px -2px hsl(12, 40%, 73%);
+    --shadow-card: 0 6px 20px -4px hsl(11, 39%, 45%);
+    --shadow-glow: 0 0 20px hsl(38 96% 60% / 0.25);
   }
 
-  /* --- Dark Mode --- */
+  /* ---------- DARK THEME ---------- */
   .dark {
-    --background: 25 30% 8%; /* #1E1611 */
-    --foreground: 24 40% 96%; /* #FCEFE3 */
+    --background: 11 20% 8%; /* deep dark red-brown */
+    --foreground: 45 100% 92%; /* cream text */
 
-    --card: 25 25% 10%; /* #261B14 */
-    --card-foreground: 24 40% 96%;
+    --card: 11 40% 12%; 
+    --card-foreground: 45 100% 92%;
 
-    --popover: 25 25% 10%;
-    --popover-foreground: 24 40% 96%;
+    --popover: 11 40% 12%;
+    --popover-foreground: 45 100% 92%;
 
-    --primary: 20 85% 60%; /* #F28C5A */
-    --primary-foreground: 25 25% 10%;
-    --primary-glow: 20 90% 65%;
+    --primary: 38 96% 60%; /* orange */
+    --primary-foreground: 11 40% 12%;
 
-    --secondary: 40 70% 60%; /* #EBC06F */
-    --secondary-foreground: 24 40% 96%;
+    --secondary: 77 33% 45%;
+    --secondary-foreground: 11 40% 12%;
 
-    --muted: 25 15% 35%;
-    --muted-foreground: 24 40% 80%;
+    --muted: 11 25% 22%;
+    --muted-foreground: 45 100% 85%;
 
-    --accent: 30 90% 75%; /* Peach Glow */
-    --accent-foreground: 25 25% 10%;
+    --accent: 38 96% 60%;
+    --accent-foreground: 11 40% 12%;
 
-    --success: 150 35% 45%; /* #64B78C */
-    --success-foreground: 24 40% 96%;
+    --success: 77 33% 45%;
+    --success-foreground: 45 100% 92%;
 
-    --destructive: 5 70% 50%; /* #E0564C */
-    --destructive-foreground: 24 40% 96%;
+    --destructive: 11 96% 32%;
+    --destructive-foreground: 45 100% 92%;
 
-    --border: 25 20% 20%;
-    --input: 25 20% 20%;
-    --ring: 20 85% 60%;
+    --border: 11 20% 18%;
+    --input: 11 20% 18%;
+    --ring: 38 96% 60%;
 
-    --gradient-hero: linear-gradient(135deg, hsl(20 85% 55%), hsl(40 70% 60%));
-    --gradient-card: linear-gradient(180deg, hsl(25 25% 10%), hsl(25 30% 8%));
-    --gradient-accent: linear-gradient(135deg, hsl(40 70% 60%), hsl(20 85% 55%));
+    --gradient-hero: linear-gradient(
+      135deg,
+      hsl(11 60% 22%),
+      hsl(38 60% 30%)
+    );
 
-    --shadow-soft: 0 2px 12px -2px hsl(40 70% 60% / 0.2);
-    --shadow-card: 0 4px 18px -4px hsl(40 70% 60% / 0.25);
-    --shadow-glow: 0 0 28px hsl(20 85% 60% / 0.35);
+    --gradient-card: linear-gradient(
+      180deg,
+      hsl(11 40% 12%),
+      hsl(11 30% 9%)
+    );
+
+    --gradient-accent: linear-gradient(
+      135deg,
+      hsl(38 96% 55%),
+      hsl(11 80% 35%)
+    );
+
+    --shadow-soft: 0 3px 14px -3px hsl(38 96% 60% / 0.25);
+    --shadow-card: 0 6px 20px -4px hsl(38 96% 60% / 0.3);
+    --shadow-glow: 0 0 28px hsl(38 96% 60% / 0.35);
   }
 }
 
@@ -102,5 +127,23 @@
 
   body {
     @apply bg-background text-foreground transition-colors duration-300;
+    background-image: var(--gradient-hero);
+    background-attachment: fixed;
+  }
+
+  .card {
+    @apply bg-card shadow-[var(--shadow-card)] transition-transform hover:scale-[1.02];
+    background-image: var(--gradient-card);
+  }
+
+  .btn-primary {
+    @apply bg-primary text-primary-foreground font-semibold rounded-full px-4 py-2 shadow-md hover:shadow-[var(--shadow-glow)] transition-all;
+  }
+}
+
+/* ✅ Added missing utility */
+@layer utilities {
+  .text-transparent {
+    color: #ff0000;
   }
 }

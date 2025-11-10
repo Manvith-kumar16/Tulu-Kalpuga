@@ -18,27 +18,19 @@ const vowels = [
   { letter: "ಈ", transliteration: "ī", pronunciation: "ii", example: "ಈದು", image: "/images/Vowels/ii.png" },
   { letter: "ಉ", transliteration: "u", pronunciation: "u", example: "ಉಲೆ", image: "/images/Vowels/u.png" },
   { letter: "ಊ", transliteration: "ū", pronunciation: "uu", example: "ಊಡ", image: "/images/Vowels/uu.png" },
-
   { letter: "ಋ", transliteration: "ṛ", pronunciation: "r", example: "ಋಷಿ", image: "/images/Vowels/r.png" },
   { letter: "ೠ", transliteration: "ṝ", pronunciation: "rr", example: "ೠಕ್ಷ", image: "/images/Vowels/rr.png" },
-
   { letter: "ಎ", transliteration: "e", pronunciation: "e", example: "ಎರು", image: "/images/Vowels/e.png" },
   { letter: "ಏ", transliteration: "ē", pronunciation: "ee", example: "ಏಳು", image: "/images/Vowels/ee.png" },
-
-   { letter: "ಎೕ", transliteration: "ē", pronunciation: "e_", example: "ಏಕ್ಕಲೆ", image: "/images/Vowels/e_.png" },
+  { letter: "ಎೕ", transliteration: "ē", pronunciation: "e_", example: "ಏಕ್ಕಲೆ", image: "/images/Vowels/e_.png" },
   { letter: "ಏೕ", transliteration: "ē̄", pronunciation: "ee_", example: "ಏಲ", image: "/images/Vowels/ee_.png" },
-
   { letter: "ಐ", transliteration: "ai", pronunciation: "ai", example: "ಐನು", image: "/images/Vowels/ai.png" },
-
   { letter: "ಒ", transliteration: "o", pronunciation: "o", example: "ಒಡು", image: "/images/Vowels/o.png" },
   { letter: "ಓ", transliteration: "ō", pronunciation: "oo", example: "ಓಲು", image: "/images/Vowels/oo.png" },
-
   { letter: "ಔ", transliteration: "au", pronunciation: "au", example: "ಔಗು", image: "/images/Vowels/au.png" },
-
   { letter: "ಅಂ", transliteration: "aṃ", pronunciation: "am", example: "ಅಂಬಟೆ", image: "/images/Vowels/am.png" },
   { letter: "ಅಃ", transliteration: "aḥ", pronunciation: "ah", example: "ಅಃ", image: "/images/Vowels/ah.png" }
 ];
-
 
 const consonants = [
   { letter: "ಕ", transliteration: "ka", pronunciation: "ka", example: "ಕರ (Hand)", image: "/images/Consonants/ka.png" },
@@ -76,9 +68,24 @@ const consonants = [
   { letter: "ಹ", transliteration: "ha", pronunciation: "ha", example: "ಹ (Letter)", image: "/images/Consonants/Ha.png" },
   { letter: "ಳ", transliteration: "ḷa", pronunciation: "ḷa", example: "ಳ (Letter)", image: "/images/Consonants/LLa.png" },
   { letter: "ೞ", transliteration: "ṟa", pronunciation: "ṟa", example: "ೞ (Letter)", image: "/images/Consonants/raa.png" },
-  { letter: "ಳ", transliteration: "ḻa", pronunciation: "ḻa", example: "ḻ (Letter)", image: "/images/Consonants/laa.png" }
+  { letter: "ಱ", transliteration: "ḻa", pronunciation: "ḻa", example: "ḻ (Letter)", image: "/images/Consonants/laa.png" }
 ];
 
+// ✅ NEW: Tulu Numbers
+const numbers = [
+  { letter: "೦", transliteration: "0", pronunciation: "zero", example: "೦ (sone)", image: "/images/Numbers/0.png" },
+  { letter: "೧", transliteration: "1", pronunciation: "one", example: "೧ (Onji)", image: "/images/Numbers/1.png" },
+  { letter: "೨", transliteration: "2", pronunciation: "two", example: "೨ (Rad)", image: "/images/Numbers/2.png" },
+  { letter: "೩", transliteration: "3", pronunciation: "three", example: "೩ (Muji)", image: "/images/Numbers/3.png" },
+  { letter: "೪", transliteration: "4", pronunciation: "four", example: "೪ (Nal)", image: "/images/Numbers/4.png" },
+  { letter: "೫", transliteration: "5", pronunciation: "five", example: "೫ (Ain)", image: "/images/Numbers/5.png" },
+  { letter: "೬", transliteration: "6", pronunciation: "six", example: "೬ (Aaji)", image: "/images/Numbers/6.png" },
+  { letter: "೭", transliteration: "7", pronunciation: "seven", example: "೭ (Aelu)", image: "/images/Numbers/7.png" },
+  { letter: "೮", transliteration: "8", pronunciation: "eight", example: "೮ (Yenuma)", image: "/images/Numbers/8.png" },
+  { letter: "೯", transliteration: "9", pronunciation: "nine", example: "೯ (Orumba)", image: "/images/Numbers/9.png" },
+  { letter: "೧೦", transliteration: "10", pronunciation: "ten", example: "೧೦ (Pth)", image: "/images/Numbers/10.png" },
+  { letter: "೧೦೦", transliteration: "100", pronunciation: "hundred", example: "೧೦೦ (Nudhu)", image: "/images/Numbers/100.png" }
+];
 
 interface LetterCardProps {
   letter: string;
@@ -167,6 +174,8 @@ const LetterCard = ({
 const Learn = () => {
   const [selectedLetter, setSelectedLetter] = useState<string | null>(null);
 
+  const totalItems = vowels.length + consonants.length + numbers.length;
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -176,7 +185,7 @@ const Learn = () => {
             Learn Tulu Lipi
           </h1>
           <p className="text-muted-foreground text-lg">
-            Master the beautiful Tulu script letter by letter. Click “Practice” to trace and learn.
+            Master the beautiful Tulu script letter by letter. Click "Practice" to trace and learn.
           </p>
         </div>
       </section>
@@ -186,7 +195,7 @@ const Learn = () => {
         <div className="container mx-auto px-4">
           <Tabs defaultValue="vowels" className="w-full">
             <div className="flex justify-center mb-8">
-              <TabsList className="grid w-full max-w-md grid-cols-2">
+              <TabsList className="grid w-full max-w-2xl grid-cols-3">
                 <TabsTrigger value="vowels" className="gap-2">
                   <span>Vowels</span>
                   <Badge variant="secondary">{vowels.length}</Badge>
@@ -194,6 +203,10 @@ const Learn = () => {
                 <TabsTrigger value="consonants" className="gap-2">
                   <span>Consonants</span>
                   <Badge variant="secondary">{consonants.length}</Badge>
+                </TabsTrigger>
+                <TabsTrigger value="numbers" className="gap-2">
+                  <span>Numbers</span>
+                  <Badge variant="secondary">{numbers.length}</Badge>
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -219,6 +232,19 @@ const Learn = () => {
                     {...cons}
                     isCompleted={i < 2}
                     onPractice={() => setSelectedLetter(cons.letter)}
+                  />
+                ))}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="numbers">
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {numbers.map((num, i) => (
+                  <LetterCard
+                    key={i}
+                    {...num}
+                    isCompleted={false}
+                    onPractice={() => setSelectedLetter(num.letter)}
                   />
                 ))}
               </div>
@@ -264,9 +290,9 @@ const Learn = () => {
           <Card className="max-w-2xl mx-auto p-8 bg-gradient-card shadow-card border-border/50">
             <div className="text-center">
               <div className="text-4xl font-bold bg-gradient-hero bg-clip-text text-transparent mb-2">
-                5 / {vowels.length + consonants.length}
+                5 / {totalItems}
               </div>
-              <p className="text-muted-foreground mb-6">Letters Learned</p>
+              <p className="text-muted-foreground mb-6">Items Learned</p>
             </div>
           </Card>
         </div>

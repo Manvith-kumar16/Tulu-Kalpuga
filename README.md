@@ -1,25 +1,3 @@
-Got it. You want your **Tulu-Kalpuga README** to look exactly like the **Learnwise-style** format shown in the screenshot:
-
-✅ Big clean title
-✅ Italic subtitle
-✅ Small badges in a row (not big for-the-badge style)
-✅ “Built with the tools and technologies:” section with rounded colorful tech badges
-✅ Clean headings with icons
-✅ Minimal, elegant formatting
-
-I will now generate a **perfectly matching Learnwise-style README.md** for your project.
-
-Here it is.
-
----
-
-# ✅ **FINAL LEARNWISE-STYLE README FOR TULU-KALPUGA**
-
-Copy this directly into your `README.md`.
-
----
-
-```markdown
 # TULU-KALPUGA
 
 *Preserving the Tulu language through modern, interactive learning*
@@ -146,6 +124,5 @@ Submit a pull request for review.
 ## 📄 License
 
 Licensed under the MIT License. 
-
-Tell me and I will generate it.
 ```
+

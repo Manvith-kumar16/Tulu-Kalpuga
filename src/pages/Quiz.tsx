@@ -145,10 +145,9 @@ const Quiz: React.FC<{ category?: "vowels" | "consonants" | "numbers" }> = ({ ca
       const distractors = pickN(pool, 3, a => a.transliteration === it.transliteration).map(d => d.transliteration);
       const options = shuffle([it.transliteration, ...distractors]);
       qs.push({
-        prompt: "Which transliteration matches this Tulu letter?",
+        prompt: "Which transliteration matches this Tulu letter image?",
         correct: it.transliteration,
         options,
-        displayLetter: it.letter,
         imageSrc: it.imageFile,
       });
     }
@@ -262,18 +261,11 @@ const Quiz: React.FC<{ category?: "vowels" | "consonants" | "numbers" }> = ({ ca
                 </div>
 
 
-                {(current.displayLetter || current.imageSrc) && (
+                {current.imageSrc && (
                   <div className="text-center mb-4">
                     <div className="inline-flex flex-col items-center justify-center gap-3">
-                      {current.imageSrc && (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={current.imageSrc} alt="Tulu letter" className="w-28 h-28 object-contain rounded-xl bg-muted/20" />
-                      )}
-                      {current.displayLetter && (
-                        <div className="inline-flex items-center justify-center w-28 h-28 rounded-xl bg-muted/20 text-5xl font-bold">
-                          <Glyph k={current.displayLetter} large />
-                        </div>
-                      )}
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={current.imageSrc} alt="Tulu letter" className="w-28 h-28 object-contain rounded-xl bg-muted/20" />
                     </div>
                   </div>
                 )}

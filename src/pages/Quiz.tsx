@@ -229,6 +229,7 @@ const Quiz: React.FC<{ category?: "vowels" | "consonants" | "numbers" | "mixed" 
               </ul>
 
               <div className="flex flex-col items-center gap-4">
+                <div className="text-sm font-medium text-foreground/90">Choose the topic</div>
                 <div className="flex flex-wrap items-center justify-center gap-2">
                   <Button variant={selectedCategory === "vowels" ? "default" : "outline"} onClick={() => setSelectedCategory("vowels")}>Vowels</Button>
                   <Button variant={selectedCategory === "consonants" ? "default" : "outline"} onClick={() => setSelectedCategory("consonants")}>Consonants</Button>

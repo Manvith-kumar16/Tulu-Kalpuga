@@ -235,6 +235,20 @@ const Quiz: React.FC<{ category?: "vowels" | "consonants" | "numbers" | "mixed" 
                   <Button variant={selectedCategory === "numbers" ? "default" : "outline"} onClick={() => setSelectedCategory("numbers")}>Numbers</Button>
                   <Button variant={selectedCategory === "hybrid" ? "default" : "outline"} onClick={() => setSelectedCategory("hybrid")}>Hybrid</Button>
                 </div>
+                <div className="flex items-center gap-2">
+                  <label htmlFor="topic-select" className="text-sm text-muted-foreground">Or pick topic:</label>
+                  <select
+                    id="topic-select"
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value as any)}
+                    className="px-3 py-2 rounded-md border border-input bg-background text-foreground"
+                  >
+                    <option value="vowels">Vowels</option>
+                    <option value="consonants">Consonants</option>
+                    <option value="numbers">Numbers</option>
+                    <option value="hybrid">Hybrid</option>
+                  </select>
+                </div>
                 <Button variant="hero" size="lg" onClick={startQuiz}><Trophy className="w-5 h-5" /> Start Quiz</Button>
               </div>
             </Card>

@@ -116,8 +116,8 @@ type Question = {
   imageSrc?: string; // image representing the letter
 };
 
-// Main component accepts optional category prop (now supports 'mixed')
-const Quiz: React.FC<{ category?: "vowels" | "consonants" | "numbers" | "mixed" }> = ({ category = "mixed" }) => {
+// Main component accepts optional category prop (supports 'hybrid' and legacy 'mixed')
+const Quiz: React.FC<{ category?: "vowels" | "consonants" | "numbers" | "mixed" | "hybrid" }> = ({ category = "hybrid" }) => {
   const [started, setStarted] = useState(false);
   const [index, setIndex] = useState(0);
   const [score, setScore] = useState(0);
@@ -126,14 +126,15 @@ const Quiz: React.FC<{ category?: "vowels" | "consonants" | "numbers" | "mixed" 
   const [selected, setSelected] = useState<string | null>(null);
   const [showAnswer, setShowAnswer] = useState(false);
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<"vowels" | "consonants" | "numbers" | "mixed">(category);
+  const initialCategory: "vowels" | "consonants" | "numbers" | "hybrid" = (category === "mixed" ? "hybrid" : (category as any));
+  const [selectedCategory, setSelectedCategory] = useState<"vowels" | "consonants" | "numbers" | "hybrid">(initialCategory);
 
   // Filter items by selected category
   const items = useMemo(() => {
     if (selectedCategory === "vowels") return vowelItems;
     if (selectedCategory === "consonants") return consonantItems;
     if (selectedCategory === "numbers") return numberItems;
-    return allItems; // mixed
+    return allItems; // hybrid (or legacy mixed)
   }, [selectedCategory]);
 
   const buildQuestions = (pool: Item[]): Question[] => {
@@ -232,7 +233,7 @@ const Quiz: React.FC<{ category?: "vowels" | "consonants" | "numbers" | "mixed" 
                   <Button variant={selectedCategory === "vowels" ? "default" : "outline"} onClick={() => setSelectedCategory("vowels")}>Vowels</Button>
                   <Button variant={selectedCategory === "consonants" ? "default" : "outline"} onClick={() => setSelectedCategory("consonants")}>Consonants</Button>
                   <Button variant={selectedCategory === "numbers" ? "default" : "outline"} onClick={() => setSelectedCategory("numbers")}>Numbers</Button>
-                  <Button variant={selectedCategory === "mixed" ? "default" : "outline"} onClick={() => setSelectedCategory("mixed")}>Mixed</Button>
+                  <Button variant={selectedCategory === "hybrid" ? "default" : "outline"} onClick={() => setSelectedCategory("hybrid")}>Hybrid</Button>
                 </div>
                 <Button variant="hero" size="lg" onClick={startQuiz}><Trophy className="w-5 h-5" /> Start Quiz</Button>
               </div>
@@ -265,7 +266,7 @@ const Quiz: React.FC<{ category?: "vowels" | "consonants" | "numbers" | "mixed" 
               <Card className="p-6 bg-gradient-card shadow-card border-border/50">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold">{current.prompt}</h3>
-                  <Badge variant="secondary">{selectedCategory === "vowels" ? "Vowels" : selectedCategory === "consonants" ? "Consonants" : selectedCategory === "numbers" ? "Numbers" : "Mixed"}</Badge>
+                  <Badge variant="secondary">{selectedCategory === "vowels" ? "Vowels" : selectedCategory === "consonants" ? "Consonants" : selectedCategory === "numbers" ? "Numbers" : "Hybrid"}</Badge>
                 </div>
 
 
@@ -286,11 +287,11 @@ const Quiz: React.FC<{ category?: "vowels" | "consonants" | "numbers" | "mixed" 
                     return (
                       <Button
                         key={opt}
-                        variant={isCorrect ? "success" : isWrong ? "destructive" : "outline"}
-                        className={`h-14 text-base rounded-xl font-semibold transition-transform duration-200 transform
-                          hover:scale-[1.03] hover:shadow-[0_10px_30px_rgba(255,140,0,0.12)]
-                          ${isCorrect ? "shadow-[0_0_20px_rgba(16,185,129,0.18)] scale-[1.02]" : ""}
-                          ${isWrong ? "shadow-[0_0_20px_rgba(239,68,68,0.16)]" : ""}`}
+                        variant={"outline"}
+                        className={`h-14 text-base rounded-xl font-semibold transition-all duration-300 transform
+                          hover:scale-[1.04] hover:shadow-[0_10px_30px_rgba(255,140,0,0.18)]
+                          ${isCorrect ? "bg-emerald-500 text-white scale-[1.06] ring-4 ring-emerald-300 shadow-[0_0_30px_rgba(16,185,129,0.45)] animate-pulse" : ""}
+                          ${isWrong ? "bg-rose-500 text-white scale-[1.02] ring-4 ring-rose-300 shadow-[0_0_30px_rgba(244,63,94,0.45)] animate-pulse" : ""}`}
                         onClick={() => !showAnswer && handleAnswer(opt)}
                         disabled={showAnswer}
                       >

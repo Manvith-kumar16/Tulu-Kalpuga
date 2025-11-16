@@ -8,7 +8,7 @@ import { vowelAudio, consonantAudio } from "@/data/tuluLetterAudio";
 
 // ----- CONFIG -----
 const TOTAL_QUESTIONS = 10;
-const MAX_LIVES = 5;
+const MAX_LIVES = 3;
 
 // ----- DATA MODEL -----
 type Item = {
@@ -116,8 +116,8 @@ type Question = {
   imageSrc?: string; // image representing the letter
 };
 
-// Main component accepts optional category prop (defaults to vowels)
-const Quiz: React.FC<{ category?: "vowels" | "consonants" | "numbers" }> = ({ category = "vowels" }) => {
+// Main component accepts optional category prop (now supports 'mixed')
+const Quiz: React.FC<{ category?: "vowels" | "consonants" | "numbers" | "mixed" }> = ({ category = "mixed" }) => {
   const [started, setStarted] = useState(false);
   const [index, setIndex] = useState(0);
   const [score, setScore] = useState(0);
@@ -126,13 +126,15 @@ const Quiz: React.FC<{ category?: "vowels" | "consonants" | "numbers" }> = ({ ca
   const [selected, setSelected] = useState<string | null>(null);
   const [showAnswer, setShowAnswer] = useState(false);
   const [questions, setQuestions] = useState<Question[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<"vowels" | "consonants" | "numbers" | "mixed">(category);
 
-  // Filter items by category
+  // Filter items by selected category
   const items = useMemo(() => {
-    if (category === "vowels") return vowelItems;
-    if (category === "consonants") return consonantItems;
-    return numberItems;
-  }, [category]);
+    if (selectedCategory === "vowels") return vowelItems;
+    if (selectedCategory === "consonants") return consonantItems;
+    if (selectedCategory === "numbers") return numberItems;
+    return allItems; // mixed
+  }, [selectedCategory]);
 
   const buildQuestions = (pool: Item[]): Question[] => {
     const base = shuffle(pool);
@@ -219,13 +221,19 @@ const Quiz: React.FC<{ category?: "vowels" | "consonants" | "numbers" }> = ({ ca
               </div>
               <h2 className="text-2xl font-bold mb-2">How it works</h2>
               <ul className="text-muted-foreground mb-6 space-y-1 text-sm">
-                <li>• {TOTAL_QUESTIONS} questions from the selected category</li>
+                <li>• {TOTAL_QUESTIONS} questions from your chosen category</li>
                 <li>• No timer — take your time</li>
                 <li>• {MAX_LIVES} hearts — wrong answers cost a heart</li>
                 <li>• Streaks give bonus points</li>
               </ul>
-              <div className="flex items-center justify-center gap-3">
-                <Button variant="outline" onClick={() => setStarted(true)} className="gap-2">Preview</Button>
+
+              <div className="flex flex-col items-center gap-4">
+                <div className="flex flex-wrap items-center justify-center gap-2">
+                  <Button variant={selectedCategory === "vowels" ? "default" : "outline"} onClick={() => setSelectedCategory("vowels")}>Vowels</Button>
+                  <Button variant={selectedCategory === "consonants" ? "default" : "outline"} onClick={() => setSelectedCategory("consonants")}>Consonants</Button>
+                  <Button variant={selectedCategory === "numbers" ? "default" : "outline"} onClick={() => setSelectedCategory("numbers")}>Numbers</Button>
+                  <Button variant={selectedCategory === "mixed" ? "default" : "outline"} onClick={() => setSelectedCategory("mixed")}>Mixed</Button>
+                </div>
                 <Button variant="hero" size="lg" onClick={startQuiz}><Trophy className="w-5 h-5" /> Start Quiz</Button>
               </div>
             </Card>
@@ -257,7 +265,7 @@ const Quiz: React.FC<{ category?: "vowels" | "consonants" | "numbers" }> = ({ ca
               <Card className="p-6 bg-gradient-card shadow-card border-border/50">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold">{current.prompt}</h3>
-                  <Badge variant="secondary">{category === "vowels" ? "Vowels" : category === "consonants" ? "Consonants" : "Numbers"}</Badge>
+                  <Badge variant="secondary">{selectedCategory === "vowels" ? "Vowels" : selectedCategory === "consonants" ? "Consonants" : selectedCategory === "numbers" ? "Numbers" : "Mixed"}</Badge>
                 </div>
 
 

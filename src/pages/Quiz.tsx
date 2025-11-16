@@ -287,11 +287,11 @@ const Quiz: React.FC<{ category?: "vowels" | "consonants" | "numbers" | "mixed" 
                     return (
                       <Button
                         key={opt}
-                        variant={"outline"}
+                        variant={(isCorrect || isWrong) ? "default" : "outline"}
                         className={`h-14 text-base rounded-xl font-semibold transition-all duration-300 transform
                           hover:scale-[1.04] hover:shadow-[0_10px_30px_rgba(255,140,0,0.18)]
-                          ${isCorrect ? "bg-emerald-500 text-white scale-[1.06] ring-4 ring-emerald-300 shadow-[0_0_30px_rgba(16,185,129,0.45)] animate-pulse" : ""}
-                          ${isWrong ? "bg-rose-500 text-white scale-[1.02] ring-4 ring-rose-300 shadow-[0_0_30px_rgba(244,63,94,0.45)] animate-pulse" : ""}`}
+                          ${isCorrect ? "bg-emerald-500 text-white scale-[1.06] shadow-[0_0_30px_rgba(16,185,129,0.45)] animate-pulse border-0" : ""}
+                          ${isWrong ? "bg-rose-500 text-white scale-[1.02] shadow-[0_0_30px_rgba(244,63,94,0.45)] animate-pulse border-0" : ""}`}
                         onClick={() => !showAnswer && handleAnswer(opt)}
                         disabled={showAnswer}
                       >

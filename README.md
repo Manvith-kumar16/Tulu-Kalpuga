@@ -96,7 +96,7 @@ http://localhost:5173
 
 ---
 
-## 🔮 Future Enhancements
+## 🔮 Future Enhancements:
 
 • Audio pronunciation
 • Flashcard-based learning
@@ -121,7 +121,5 @@ Submit a pull request for review.
 
 ---
 
-## 📄 License
-
+## 📄 License:
 Licensed under the MIT License. 
-```

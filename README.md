@@ -36,7 +36,7 @@ The user interface is designed to be clean, modern, and easy for beginners.
 
 ---
 
-## 📚 Features
+## 📚 Features:
 
 • Complete Tulu alphabet learning  
 • Image-supported examples  
@@ -47,7 +47,7 @@ The user interface is designed to be clean, modern, and easy for beginners.
 
 ---
 
-## 🗂️ Project Structure
+## 🗂️ Project Structure:
 
 ```
 
@@ -125,4 +125,5 @@ Submit a pull request for review.
 
 Licensed under the MIT License. 
 ```
+
 

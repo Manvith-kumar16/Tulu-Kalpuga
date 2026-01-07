@@ -21,7 +21,7 @@
 
 ---
 
-## 📘 Overview
+## 📘 Overview:
 
 **Tulu-Kalpuga** is an interactive platform created to help users learn the Tulu language through a structured and visually rich experience.  
 The project focuses on teaching:
@@ -72,7 +72,7 @@ Tulu-Kalpuga/
 
 ---
 
-## ⚙️ Getting Started
+## ⚙️ Getting Started:
 
 ### Prerequisites
 
@@ -107,7 +107,7 @@ http://localhost:5173
 
 ---
 
-## 🤝 Contributing
+## 🤝 Contributing:
 
 Contributions are welcome.
 
@@ -125,5 +125,3 @@ Submit a pull request for review.
 
 Licensed under the MIT License. 
 ```
-
-

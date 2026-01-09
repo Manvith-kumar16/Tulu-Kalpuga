@@ -21,6 +21,12 @@
 
 ---
 
+## 🌐 Live Preview
+
+🔗 **Live Website:** [https://Tulu-Kalpuga.vercel.app/](https://tulukalpuga.vercel.app/)  
+
+---
+
 ## 📘 Overview:
 
 **Tulu-Kalpuga** is an interactive platform created to help users learn the Tulu language through a structured and visually rich experience.  
@@ -123,3 +129,4 @@ Submit a pull request for review.
 
 ## 📄 License:
 Licensed under the MIT License. 
+

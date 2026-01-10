@@ -23,7 +23,7 @@
 
 ## 🌐 Live Preview
 
-🔗 **Live Website:** [https://Tulu-Kalpuga.vercel.app/](https://tulukalpuga.vercel.app/)  
+🔗 **Live Website:** [https://tulukalpuga.vercel.app/](https://tulukalpuga.vercel.app/)  
 
 ---
 
@@ -129,4 +129,5 @@ Submit a pull request for review.
 
 ## 📄 License:
 Licensed under the MIT License. 
+
 

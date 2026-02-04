@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { supabase } from "@/integrations/supabase/client";
+// import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
@@ -31,66 +31,32 @@ export function NotificationBell() {
   useEffect(() => {
     if (!user) return;
 
-    fetchNotifications();
+    // TODO: Implement notifications with new backend
+    // fetchNotifications();
 
     // Subscribe to realtime updates
-    const channel = supabase
-      .channel("notifications")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "notifications",
-          filter: `user_id=eq.${user.id}`,
-        },
-        () => {
-          fetchNotifications();
-        }
-      )
-      .subscribe();
+    // const channel = supabase ...
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    // return () => {
+    //   supabase.removeChannel(channel);
+    // };
   }, [user]);
 
   const fetchNotifications = async () => {
-    if (!user) return;
-
-    const { data, error } = await supabase
-      .from("notifications")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false })
-      .limit(10);
-
-    if (error) {
-      console.error("Error fetching notifications:", error);
-      return;
-    }
-
-    setNotifications(data || []);
-    setUnreadCount(data?.filter((n) => !n.read).length || 0);
+    // Mock or empty for now
+    setNotifications([]);
+    setUnreadCount(0);
   };
 
   const markAsRead = async (notificationId: string) => {
-    await supabase
-      .from("notifications")
-      .update({ read: true })
-      .eq("id", notificationId);
+    // TODO
+    setNotifications(prev => prev.map(n => n.id === notificationId ? { ...n, read: true } : n));
   };
 
   const markAllAsRead = async () => {
-    if (!user) return;
-
-    await supabase
-      .from("notifications")
-      .update({ read: true })
-      .eq("user_id", user.id)
-      .eq("read", false);
-
-    fetchNotifications();
+    // TODO
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    setUnreadCount(0);
   };
 
   if (!user) return null;
@@ -136,7 +102,7 @@ export function NotificationBell() {
         <ScrollArea className="h-[300px]">
           {notifications.length === 0 ? (
             <div className="p-4 text-center text-muted-foreground text-sm">
-              No notifications yet
+              No notifications yet (Backend migration in progress)
             </div>
           ) : (
             <div className="divide-y divide-border">
@@ -145,9 +111,8 @@ export function NotificationBell() {
                   key={notification.id}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className={`p-4 hover:bg-muted/50 cursor-pointer transition-colors ${
-                    !notification.read ? "bg-primary/5" : ""
-                  }`}
+                  className={`p-4 hover:bg-muted/50 cursor-pointer transition-colors ${!notification.read ? "bg-primary/5" : ""
+                    }`}
                   onClick={() => {
                     if (!notification.read) markAsRead(notification.id);
                   }}

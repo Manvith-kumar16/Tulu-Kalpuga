@@ -147,24 +147,19 @@ const LetterCard = ({
 
           <div className="text-sm text-muted-foreground mb-4 min-h-[40px]">{example}</div>
 
-          <AnimatePresence>
-            {isHovered && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                className="flex gap-2 justify-center"
-              >
-                {audioSrc && (
-                  <AudioPlayer audioSrc={audioSrc} letter={letter} variant="outline" size="sm" />
-                )}
-                <Button size="sm" variant="default" className="gap-2" onClick={onPractice}>
-                  <BookOpen className="w-4 h-4" />
-                  Practice
-                </Button>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <div className="flex gap-2 justify-center mt-4">
+            <AudioPlayer
+              audioSrc={audioSrc || ""}
+              letter={letter}
+              variant="outline"
+              size="sm"
+              className="rounded-full border-primary/20 hover:bg-primary/5 text-primary"
+            />
+            <Button size="sm" variant="default" className="gap-2 rounded-full" onClick={onPractice}>
+              <BookOpen className="w-4 h-4" />
+              Practice
+            </Button>
+          </div>
         </div>
       </Card>
     </motion.div>
@@ -173,15 +168,30 @@ const LetterCard = ({
 
 const Learn = () => {
   const [selectedLetter, setSelectedLetter] = useState<string | null>(null);
+  const [selectedLetterData, setSelectedLetterData] = useState<{ letter: string; transliteration: string; image?: string } | null>(null);
 
   const totalItems = vowels.length + consonants.length + numbers.length;
+
+  const handlePracticeClick = (letter: string) => {
+    setSelectedLetter(letter);
+    // Find the letter data
+    const allLetters = [...vowels, ...consonants, ...numbers];
+    const letterData = allLetters.find(l => l.letter === letter);
+    if (letterData) {
+      setSelectedLetterData({
+        letter: letterData.letter,
+        transliteration: letterData.transliteration,
+        image: letterData.image,
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <section className="bg-gradient-to-b from-muted/30 to-background py-12 border-b border-border">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl font-bold mb-4 bg-gradient-hero bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold mb-4 text-red-700 drop-shadow-sm">
             Learn Tulu Lipi
           </h1>
           <p className="text-muted-foreground text-lg">
@@ -218,7 +228,7 @@ const Learn = () => {
                     key={i}
                     {...vowel}
                     isCompleted={i < 3}
-                    onPractice={() => setSelectedLetter(vowel.letter)}
+                    onPractice={() => handlePracticeClick(vowel.letter)}
                   />
                 ))}
               </div>
@@ -231,7 +241,7 @@ const Learn = () => {
                     key={i}
                     {...cons}
                     isCompleted={i < 2}
-                    onPractice={() => setSelectedLetter(cons.letter)}
+                    onPractice={() => handlePracticeClick(cons.letter)}
                   />
                 ))}
               </div>
@@ -244,7 +254,7 @@ const Learn = () => {
                     key={i}
                     {...num}
                     isCompleted={false}
-                    onPractice={() => setSelectedLetter(num.letter)}
+                    onPractice={() => handlePracticeClick(num.letter)}
                   />
                 ))}
               </div>
@@ -270,15 +280,21 @@ const Learn = () => {
               className="bg-white rounded-2xl p-6 shadow-2xl relative max-w-md w-full"
             >
               <button
-                onClick={() => setSelectedLetter(null)}
+                onClick={() => {
+                  setSelectedLetter(null);
+                  setSelectedLetterData(null);
+                }}
                 className="absolute top-2 right-2 text-gray-600 hover:text-black"
               >
                 ✖
               </button>
-              <WritingPractice
-                letter={selectedLetter}
-                image={`/images/Vowels/${selectedLetter}.png`}
-              />
+              {selectedLetterData && (
+                <WritingPractice
+                  letter={selectedLetterData.letter}
+                  image={selectedLetterData.image}
+                  transliteration={selectedLetterData.transliteration}
+                />
+              )}
             </motion.div>
           </motion.div>
         )}
@@ -289,7 +305,7 @@ const Learn = () => {
         <div className="container mx-auto px-4">
           <Card className="max-w-2xl mx-auto p-8 bg-gradient-card shadow-card border-border/50">
             <div className="text-center">
-              <div className="text-4xl font-bold bg-gradient-hero bg-clip-text text-transparent mb-2">
+              <div className="text-4xl font-bold text-red-700 mb-2">
                 5 / {totalItems}
               </div>
               <p className="text-muted-foreground mb-6">Items Learned</p>

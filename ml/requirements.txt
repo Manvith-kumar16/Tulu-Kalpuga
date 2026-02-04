@@ -1,0 +1,7 @@
+flask
+flask-cors
+tensorflow>=2.12
+opencv-python-headless
+pillow
+numpy
+scikit-image

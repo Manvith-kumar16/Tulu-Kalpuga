@@ -54,12 +54,30 @@ export const consonantAudio: LetterAudio[] = [
   { letter: "ಱ", transliteration: "ṟa", audioFile: "/audio/consonants/ra2.mp3" },
 ];
 
+export const numberAudio: LetterAudio[] = [
+  { letter: "೦", transliteration: "0", audioFile: "/audio/numbers/0.mp3" },
+  { letter: "೧", transliteration: "1", audioFile: "/audio/numbers/1.mp3" },
+  { letter: "೨", transliteration: "2", audioFile: "/audio/numbers/2.mp3" },
+  { letter: "೩", transliteration: "3", audioFile: "/audio/numbers/3.mp3" },
+  { letter: "೪", transliteration: "4", audioFile: "/audio/numbers/4.mp3" },
+  { letter: "೫", transliteration: "5", audioFile: "/audio/numbers/5.mp3" },
+  { letter: "೬", transliteration: "6", audioFile: "/audio/numbers/6.mp3" },
+  { letter: "೭", transliteration: "7", audioFile: "/audio/numbers/7.mp3" },
+  { letter: "೮", transliteration: "8", audioFile: "/audio/numbers/8.mp3" },
+  { letter: "೯", transliteration: "9", audioFile: "/audio/numbers/9.mp3" },
+  { letter: "೧೦", transliteration: "10", audioFile: "/audio/numbers/10.mp3" },
+  { letter: "೧೦೦", transliteration: "100", audioFile: "/audio/numbers/100.mp3" },
+];
+
 export const getAudioForLetter = (letter: string): string | null => {
   const vowelMatch = vowelAudio.find(v => v.letter === letter);
   if (vowelMatch) return vowelMatch.audioFile;
 
   const consonantMatch = consonantAudio.find(c => c.letter === letter);
   if (consonantMatch) return consonantMatch.audioFile;
+
+  const numberMatch = numberAudio.find(n => n.letter === letter);
+  if (numberMatch) return numberMatch.audioFile;
 
   return null;
 };

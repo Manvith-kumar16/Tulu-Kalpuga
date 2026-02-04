@@ -61,7 +61,7 @@ const Home = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-hero bg-clip-text text-transparent"
+              className="text-4xl md:text-6xl font-bold mb-6 text-gradient"
             >
               Master Tulu Lipi Script
             </motion.h1>
@@ -107,7 +107,7 @@ const Home = () => {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5, delay: 0.4 + index * 0.1 }}
                 >
-                  <div className="text-3xl md:text-4xl font-bold bg-gradient-hero bg-clip-text text-transparent">
+                  <div className="text-3xl md:text-4xl font-bold text-red-700">
                     {stat.value}
                   </div>
                   <div className="text-sm text-muted-foreground mt-1">
@@ -151,8 +151,8 @@ const Home = () => {
                   whileHover={{ y: -8 }}
                 >
                   <Card className="p-6 hover:shadow-card transition-all duration-300 border-border/50 bg-gradient-card h-full">
-                    <div className="w-12 h-12 bg-gradient-hero rounded-lg flex items-center justify-center mb-4 shadow-soft">
-                      <Icon className="w-6 h-6 text-primary-foreground" />
+                    <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-4 shadow-soft">
+                      <Icon className="w-6 h-6 text-red-700" />
                     </div>
                     <h3 className="text-lg font-semibold mb-2">
                       {feature.title}
@@ -179,7 +179,7 @@ const Home = () => {
           >
             <Card className="max-w-3xl mx-auto p-8 md:p-12 text-center bg-gradient-card shadow-card border-border/50">
               <motion.div
-                className="w-16 h-16 bg-gradient-hero rounded-full flex items-center justify-center mx-auto mb-6 shadow-glow"
+                className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6 shadow-glow"
                 animate={{ y: [0, -10, 0] }}
                 transition={{
                   duration: 3,
@@ -187,7 +187,7 @@ const Home = () => {
                   ease: "easeInOut",
                 }}
               >
-                <Check className="w-8 h-8 text-primary-foreground" />
+                <Check className="w-8 h-8 text-red-700" />
               </motion.div>
 
               <h2 className="text-3xl font-bold mb-4">

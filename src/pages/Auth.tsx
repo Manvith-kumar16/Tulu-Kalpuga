@@ -9,6 +9,7 @@ import { Sparkles, Mail } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { GoogleLogin } from "@react-oauth/google";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -48,16 +49,7 @@ const Auth = () => {
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    setLoading(true);
-    try {
-      await signInWithGoogle();
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-muted/30 px-4">
@@ -71,7 +63,7 @@ const Auth = () => {
           <div className="w-16 h-16 bg-gradient-hero rounded-full flex items-center justify-center mx-auto mb-4 shadow-glow animate-float">
             <Sparkles className="w-8 h-8 text-primary-foreground" />
           </div>
-          <h1 className="text-3xl font-bold mb-2 bg-gradient-hero bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold mb-2 text-gradient">
             Welcome to TuluLip
           </h1>
           <p className="text-muted-foreground">
@@ -180,15 +172,22 @@ const Auth = () => {
             </div>
           </div>
 
-          <Button
-            variant="outline"
-            className="w-full gap-2"
-            onClick={handleGoogleSignIn}
-            disabled={loading}
-          >
-            <Mail className="w-4 h-4" />
-            Google
-          </Button>
+          <div className="w-full flex justify-center mt-4">
+            <GoogleLogin
+              onSuccess={(response) => {
+                if (response.credential) {
+                  signInWithGoogle(response.credential);
+                }
+              }}
+              onError={() => {
+                console.error("Google Login Failed");
+              }}
+              useOneTap
+              theme="outline"
+              size="large"
+              shape="pill"
+            />
+          </div>
         </Card>
       </motion.div>
     </div>

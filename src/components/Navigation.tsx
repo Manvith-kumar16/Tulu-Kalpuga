@@ -11,14 +11,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { 
-  BookOpen, 
-  Target, 
-  Trophy, 
-  BarChart3, 
-  User, 
-  Settings, 
-  LogOut 
+import {
+  BookOpen,
+  Target,
+  Trophy,
+  BarChart3,
+  User as UserIcon,
+  Settings,
+  LogOut
 } from "lucide-react";
 
 import { useAuth } from "@/contexts/AuthContext";
@@ -26,12 +26,14 @@ import { ThemeToggle } from "./ThemeToggle";
 import { NotificationBell } from "./NotificationBell";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+// import { supabase } from "@/integrations/supabase/client";
 
 const Navigation = () => {
   const location = useLocation();
   const { user, signOut } = useAuth();
-  const [profile, setProfile] = useState<{ full_name: string; avatar_url: string } | null>(null);
+
+  // No longer needed as we get name from user object directly
+  // const [profile, setProfile] = useState<{ full_name: string; avatar_url: string } | null>(null);
 
   const navItems = [
     { path: "/learn", label: "Learn", icon: BookOpen },
@@ -40,6 +42,7 @@ const Navigation = () => {
     { path: "/progress", label: "Progress", icon: BarChart3 },
   ];
 
+  /*
   useEffect(() => {
     if (user) fetchProfile();
   }, [user]);
@@ -55,11 +58,12 @@ const Navigation = () => {
 
     if (data) setProfile(data);
   };
+  */
 
   const isActive = (path: string) => location.pathname === path;
 
   const initials =
-    profile?.full_name
+    user?.name
       ?.split(" ")
       .map((n) => n[0])
       .join("")
@@ -73,16 +77,16 @@ const Navigation = () => {
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          
+
           {/* ✅ Updated Logo Section */}
           <Link to="/" className="flex items-center gap-2 group">
-           
-              <img
-                src="/tulu_logo_bg.png"
-                alt="Tulu Logo"
-                className="w-12 h-12 object-contain"
-              />
-          
+
+            <img
+              src="/tulu_logo_bg.png"
+              alt="Tulu Logo"
+              className="w-12 h-12 object-contain"
+            />
+
 
             <span className="text-2xl font-bold text-red-600">Tulu Kalpuga</span>
 
@@ -118,8 +122,8 @@ const Navigation = () => {
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                       <Avatar className="h-10 w-10 border-2 border-primary/20">
-                        <AvatarImage src={profile?.avatar_url} />
-                        <AvatarFallback className="bg-gradient-hero text-primary-foreground">
+                        {/* <AvatarImage src={profile?.avatar_url} /> */}
+                        <AvatarFallback className="bg-gradient-hero text-red-700 font-bold">
                           {initials}
                         </AvatarFallback>
                       </Avatar>
@@ -130,7 +134,7 @@ const Navigation = () => {
                     <DropdownMenuLabel>
                       <div className="flex flex-col space-y-1">
                         <p className="text-sm font-medium">
-                          {profile?.full_name || "User"}
+                          {user.name || "User"}
                         </p>
                         <p className="text-xs text-muted-foreground">
                           {user.email}
@@ -142,7 +146,7 @@ const Navigation = () => {
 
                     <DropdownMenuItem asChild>
                       <Link to="/profile" className="cursor-pointer flex items-center gap-2">
-                        <User className="w-4 h-4" />
+                        <UserIcon className="w-4 h-4" />
                         Profile
                       </Link>
                     </DropdownMenuItem>

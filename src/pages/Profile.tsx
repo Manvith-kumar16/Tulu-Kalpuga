@@ -6,9 +6,9 @@ import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
+// import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { User, Trophy, Flame, BookOpen, Edit2 } from "lucide-react";
+import { Trophy, Flame, BookOpen, Edit2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
@@ -41,10 +41,22 @@ const Profile = () => {
       navigate("/auth");
       return;
     }
-    fetchProfile();
-    fetchAchievements();
+    // Simulate fetch
+    setTimeout(() => {
+      setProfile({
+        full_name: user.name || "",
+        avatar_url: "",
+        learning_streak: 0,
+        total_letters_learned: 0
+      });
+      setFullName(user.name || "");
+      setAchievements([]);
+      setLoading(false);
+    }, 500);
+
   }, [user, navigate]);
 
+  /*
   const fetchProfile = async () => {
     if (!user) return;
 
@@ -63,38 +75,26 @@ const Profile = () => {
     }
     setLoading(false);
   };
+  */
 
-  const fetchAchievements = async () => {
-    if (!user) return;
-
-    const { data, error } = await supabase
-      .from("achievements")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("earned_at", { ascending: false });
-
-    if (error) {
-      console.error("Error fetching achievements:", error);
-    } else {
-      setAchievements(data || []);
-    }
-  };
+  /*
+  const fetchAchievements = async () => { ... }
+  */
 
   const handleUpdateProfile = async () => {
     if (!user) return;
 
+    // TODO: Update backend
+    toast.success("Profile updated locally (backend pending)");
+    setProfile(prev => prev ? ({ ...prev, full_name: fullName }) : null);
+    setEditing(false);
+
+    /*
     const { error } = await supabase
       .from("profiles")
       .update({ full_name: fullName })
       .eq("id", user.id);
-
-    if (error) {
-      toast.error("Failed to update profile");
-    } else {
-      toast.success("Profile updated successfully!");
-      setEditing(false);
-      fetchProfile();
-    }
+    */
   };
 
   if (loading) {
@@ -127,7 +127,7 @@ const Profile = () => {
             <div className="flex flex-col md:flex-row items-center gap-6">
               <Avatar className="w-24 h-24 border-4 border-primary/20">
                 <AvatarImage src={profile?.avatar_url} />
-                <AvatarFallback className="text-2xl bg-gradient-hero text-primary-foreground">
+                <AvatarFallback className="text-2xl bg-gradient-hero text-red-700 font-bold">
                   {initials}
                 </AvatarFallback>
               </Avatar>

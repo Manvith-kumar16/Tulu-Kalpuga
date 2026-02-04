@@ -4,119 +4,124 @@
 
 @layer base {
   :root {
-    /* ---------- LIGHT THEME (USING GIVEN PALETTE) ---------- */
+    /* ---------- PREMIUM TULU THEME ---------- */
+    /* Background: A very warm, rich cream/parchment */
+    --background: 40 50% 98%; 
+    --foreground: 20 40% 20%; /* Dark warm brown text */
 
-    --background: 80 100% 94%; /* soft cream background */
-    --foreground: 11 96% 20%; /* deep red-brown text */
+    /* Card: Slightly warmer than bg */
+    --card: 40 50% 99%;
+    --card-foreground: 20 40% 20%;
 
-    --card: 45 100% 96%; /* light cream card */
-    --card-foreground: 11 96% 20%;
+    --popover: 40 50% 99%;
+    --popover-foreground: 20 40% 20%;
 
-    --popover: 45 100% 96%;
-    --popover-foreground: 11 96% 20%;
+    /* Primary: Royal Gold/Amber */
+    --primary: 35 90% 55%; 
+    --primary-foreground: 40 90% 98%;
 
-    --primary: 38 96% 60%; /* vibrant orange-yellow (#FCB53B) */
-    --primary-foreground: 45 100% 96%;
+    /* Secondary: Deep Earthy Red/Brown for Tulu culture feel */
+    --secondary: 10 60% 30%;
+    --secondary-foreground: 40 90% 98%;
 
-    --secondary: 77 35% 45%; /* green (#84994F) */
-    --secondary-foreground: 45 100% 96%;
+    /* Muted: Soft Gold/Beige */
+    --muted: 35 30% 90%;
+    --muted-foreground: 20 20% 40%;
 
-    --muted: 45 20% 80%; /* soft yellow */
-    --muted-foreground: 11 40% 30%;
+    /* Accent: A vibrant Vermilion for highlights */
+    --accent: 10 80% 60%;
+    --accent-foreground: 40 90% 98%;
 
-    --accent: 38 96% 60%; /* same as primary */
-    --accent-foreground: 45 100% 96%;
+    /* Success: Rich Olive */
+    --success: 85 45% 45%; 
+    --success-foreground: 40 90% 98%;
 
-    --success: 77 33% 45%; /* green */
-    --success-foreground: 45 100% 96%;
+    /* Destructive: Deep Crimson */
+    --destructive: 0 70% 40%;
+    --destructive-foreground: 40 90% 98%;
 
-    --destructive: 11 96% 32%; /* deep red (#A72703) */
-    --destructive-foreground: 45 100% 96%;
+    --border: 35 25% 85%;
+    --input: 35 25% 85%;
+    --ring: 35 90% 55%;
 
-    --border: 45 30% 85%;
-    --input: 45 30% 85%;
-    --ring: 38 96% 60%;
-
-    --radius: 0.75rem;
+    --radius: 1rem;
 
     /* ---------- GRADIENTS & SHADOWS ---------- */
+    /* Hero Gradient: Subtle warmth flow */
     --gradient-hero: linear-gradient(
-      135deg,
-      hsl(45 100% 90%),
-      hsl(38, 72%, 76%)
+      160deg,
+      hsl(40 50% 98%) 0%,
+      hsl(35 60% 95%) 40%,
+      hsl(35 40% 90%) 100%
     );
 
+    /* Card Gradient: Glassy feel */
     --gradient-card: linear-gradient(
-      180deg,
-      hsl(45 100% 96%),
-      hsl(45 70% 88%)
+      145deg,
+      rgba(255, 255, 255, 0.9) 0%,
+      rgba(255, 252, 240, 0.8) 100%
     );
 
-    --gradient-accent: linear-gradient(
-      135deg,
-      hsl(38 96% 65%),
-      hsl(45 100% 80%)
+    /* Text Gradient: Gold to Red */
+    --gradient-text: linear-gradient(
+        90deg,
+        hsl(10 60% 40%),
+        hsl(35 80% 50%)
     );
 
-    --shadow-soft: 0 2px 12px -2px hsl(12, 40%, 73%);
-    --shadow-card: 0 6px 20px -4px hsl(11, 39%, 45%);
-    --shadow-glow: 0 0 20px hsl(38 96% 60% / 0.25);
+    --shadow-soft: 0 4px 20px -2px rgba(166, 140, 100, 0.15);
+    --shadow-card: 0 10px 40px -4px rgba(166, 140, 100, 0.1);
+    --shadow-glow: 0 0 30px rgba(212, 175, 55, 0.3);
   }
 
-  /* ---------- DARK THEME ---------- */
   .dark {
-    --background: 11 20% 8%; /* deep dark red-brown */
-    --foreground: 45 100% 92%; /* cream text */
+    /* Dark Theme: Deep Temple Brown/Black */
+    --background: 20 30% 8%; 
+    --foreground: 40 30% 90%;
 
-    --card: 11 40% 12%; 
-    --card-foreground: 45 100% 92%;
+    --card: 20 30% 12%; 
+    --card-foreground: 40 30% 90%;
 
-    --popover: 11 40% 12%;
-    --popover-foreground: 45 100% 92%;
+    --popover: 20 30% 12%;
+    --popover-foreground: 40 30% 90%;
 
-    --primary: 38 96% 60%; /* orange */
-    --primary-foreground: 11 40% 12%;
+    --primary: 35 80% 60%; /* Bright Gold */
+    --primary-foreground: 20 30% 10%;
 
-    --secondary: 77 33% 45%;
-    --secondary-foreground: 11 40% 12%;
+    --secondary: 10 50% 40%;
+    --secondary-foreground: 40 30% 90%;
 
-    --muted: 11 25% 22%;
-    --muted-foreground: 45 100% 85%;
+    --muted: 20 30% 16%;
+    --muted-foreground: 40 20% 70%;
 
-    --accent: 38 96% 60%;
-    --accent-foreground: 11 40% 12%;
+    --accent: 10 70% 55%;
+    --accent-foreground: 40 30% 95%;
 
-    --success: 77 33% 45%;
-    --success-foreground: 45 100% 92%;
+    --success: 85 45% 45%; 
+    --success-foreground: 40 30% 95%;
 
-    --destructive: 11 96% 32%;
-    --destructive-foreground: 45 100% 92%;
+    --destructive: 0 60% 40%;
+    --destructive-foreground: 40 30% 95%;
 
-    --border: 11 20% 18%;
-    --input: 11 20% 18%;
-    --ring: 38 96% 60%;
+    --border: 20 30% 20%;
+    --input: 20 30% 20%;
+    --ring: 35 80% 60%;
 
     --gradient-hero: linear-gradient(
-      135deg,
-      hsl(11 60% 22%),
-      hsl(38 60% 30%)
+      160deg,
+      hsl(20 30% 8%) 0%,
+      hsl(20 30% 12%) 100%
     );
 
     --gradient-card: linear-gradient(
-      180deg,
-      hsl(11 40% 12%),
-      hsl(11 30% 9%)
+      145deg,
+      rgba(40, 30, 25, 0.9) 0%,
+      rgba(30, 20, 15, 0.8) 100%
     );
 
-    --gradient-accent: linear-gradient(
-      135deg,
-      hsl(38 96% 55%),
-      hsl(11 80% 35%)
-    );
-
-    --shadow-soft: 0 3px 14px -3px hsl(38 96% 60% / 0.25);
-    --shadow-card: 0 6px 20px -4px hsl(38 96% 60% / 0.3);
-    --shadow-glow: 0 0 28px hsl(38 96% 60% / 0.35);
+    --shadow-soft: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+    --shadow-card: 0 10px 40px -4px rgba(0, 0, 0, 0.6);
+    --shadow-glow: 0 0 30px rgba(212, 175, 55, 0.15);
   }
 }
 
@@ -126,24 +131,26 @@
   }
 
   body {
-    @apply bg-background text-foreground transition-colors duration-300;
+    @apply bg-background text-foreground transition-all duration-300 antialiased;
     background-image: var(--gradient-hero);
     background-attachment: fixed;
   }
-
-  .card {
-    @apply bg-card shadow-[var(--shadow-card)] transition-transform hover:scale-[1.02];
-    background-image: var(--gradient-card);
-  }
-
-  .btn-primary {
-    @apply bg-primary text-primary-foreground font-semibold rounded-full px-4 py-2 shadow-md hover:shadow-[var(--shadow-glow)] transition-all;
+  
+  h1, h2, h3, h4, h5, h6 {
+      @apply tracking-tight;
   }
 }
 
-/* ✅ Added missing utility */
-@layer utilities {
-  .text-transparent {
-    color: #ff0000;
-  }
+@layer components {
+    .glass-panel {
+        @apply bg-white/70 dark:bg-black/40 backdrop-blur-xl border border-white/20 shadow-[var(--shadow-card)];
+    }
+
+    .glass-card {
+        @apply bg-white/60 dark:bg-black/30 backdrop-blur-md border border-white/10 shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-glow)] transition-all duration-300;
+    }
+    
+    .text-gradient {
+        @apply bg-clip-text text-transparent bg-[image:var(--gradient-text)];
+    }
 }

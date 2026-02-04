@@ -1,56 +1,57 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { User, Session } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { api } from "@/services/api";
+
+interface User {
+  _id: string;
+  name: string;
+  email: string;
+  role?: string;
+}
 
 interface AuthContextType {
   user: User | null;
-  session: Session | null;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, fullName: string) => Promise<void>;
-  signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
   loading: boolean;
+  signInWithGoogle: (credential: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
+    const loadUser = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const userData = await api.get('/auth/me');
+          setUser(userData);
+        } catch (error) {
+          console.error("Failed to load user", error);
+          localStorage.removeItem('token');
+        }
       }
-    );
-
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
       setLoading(false);
-    });
+    };
 
-    return () => subscription.unsubscribe();
+    loadUser();
   }, []);
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      
-      if (error) throw error;
-      
+      const data = await api.post('/auth/login', { email, password });
+      localStorage.setItem('token', data.token);
+
+      const userData = await api.get('/auth/me');
+      setUser(userData);
+
       toast.success("Welcome back!");
       navigate("/learn");
     } catch (error: any) {
@@ -61,21 +62,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signUp = async (email: string, password: string, fullName: string) => {
     try {
-      const redirectUrl = `${window.location.origin}/`;
-      
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: redirectUrl,
-          data: {
-            full_name: fullName,
-          },
-        },
-      });
-      
-      if (error) throw error;
-      
+      const data = await api.post('/auth/register', { name: fullName, email, password });
+      localStorage.setItem('token', data.token);
+
+      const userData = await api.get('/auth/me');
+      setUser(userData);
+
       toast.success("Account created! Welcome to TuluLip!");
       navigate("/learn");
     } catch (error: any) {
@@ -84,40 +76,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const signInWithGoogle = async () => {
+  const signInWithGoogle = async (credential: string) => {
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: `${window.location.origin}/`,
-        },
-      });
-      
-      if (error) throw error;
+      const data = await api.post('/auth/google', { token: credential });
+      localStorage.setItem('token', data.token);
+
+      const userData = await api.get('/auth/me');
+      setUser(userData);
+
+      toast.success("Successfully signed in with Google!");
+      navigate("/learn");
     } catch (error: any) {
-      toast.error(error.message || "Failed to sign in with Google");
+      toast.error(error.message || "Google Sign-In failed");
       throw error;
     }
   };
 
   const signOut = async () => {
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      
-      toast.success("Signed out successfully");
-      navigate("/");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to sign out");
-      throw error;
-    }
+    localStorage.removeItem('token');
+    setUser(null);
+    toast.success("Signed out successfully");
+    navigate("/");
   };
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        session,
         signIn,
         signUp,
         signInWithGoogle,

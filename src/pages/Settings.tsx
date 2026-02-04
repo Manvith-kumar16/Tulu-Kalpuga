@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
+// import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Settings as SettingsIcon, Moon, Sun, Bell, Volume2, Mail, Target, Globe, User } from "lucide-react";
 import { motion } from "framer-motion";
@@ -26,44 +26,23 @@ const Settings = () => {
       navigate("/auth");
       return;
     }
-    fetchSettings();
+    // Mock fetch
+    setTimeout(() => setLoading(false), 500);
   }, [user, navigate]);
 
-  const fetchSettings = async () => {
-    if (!user) return;
-
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("theme_preference, notifications_enabled, sound_effects_enabled")
-      .eq("id", user.id)
-      .maybeSingle();
-
-    if (error) {
-      console.error("Error fetching settings:", error);
-    } else if (data) {
-      setNotifications(data.notifications_enabled);
-      setSoundEffects(data.sound_effects_enabled);
-      if (data.theme_preference) {
-        setTheme(data.theme_preference as "light" | "dark" | "system");
-      }
-    }
-    setLoading(false);
-  };
 
   const updateSetting = async (key: string, value: boolean | string) => {
     if (!user) return;
 
+    // Mock update
+    toast.success("Setting updated (local only)");
+
+    /*
     const { error } = await supabase
       .from("profiles")
       .update({ [key]: value })
       .eq("id", user.id);
-
-    if (error) {
-      toast.error("Failed to update setting");
-      console.error(error);
-    } else {
-      toast.success("Setting updated");
-    }
+    */
   };
 
   const handleThemeChange = (newTheme: "light" | "dark" | "system") => {
@@ -97,6 +76,9 @@ const Settings = () => {
             <p className="text-muted-foreground">
               Customize your learning experience
             </p>
+            <p className="text-sm text-yellow-600 mt-2 bg-yellow-100 p-2 rounded border border-yellow-200 inline-block">
+              Note: Backend settings persistence is temporarily unavailable during system upgrade.
+            </p>
           </div>
 
           {/* Appearance Settings */}
@@ -125,11 +107,10 @@ const Settings = () => {
                   <button
                     key={themeOption}
                     onClick={() => handleThemeChange(themeOption)}
-                    className={`p-4 rounded-lg border-2 transition-all ${
-                      theme === themeOption
+                    className={`p-4 rounded-lg border-2 transition-all ${theme === themeOption
                         ? "border-primary bg-primary/10"
                         : "border-border hover:border-primary/50"
-                    }`}
+                      }`}
                   >
                     <div className="flex flex-col items-center gap-2">
                       {themeOption === "light" && (
@@ -275,11 +256,10 @@ const Settings = () => {
                         setLanguageLevel(level);
                         toast.success(`Level set to ${level}`);
                       }}
-                      className={`p-3 rounded-lg border-2 transition-all text-sm font-medium capitalize ${
-                        languageLevel === level
+                      className={`p-3 rounded-lg border-2 transition-all text-sm font-medium capitalize ${languageLevel === level
                           ? "border-primary bg-primary/10"
                           : "border-border hover:border-primary/50"
-                      }`}
+                        }`}
                     >
                       {level}
                     </button>
@@ -309,11 +289,7 @@ const Settings = () => {
               <div className="space-y-2">
                 <Label>Account Created</Label>
                 <p className="text-sm text-muted-foreground">
-                  {user?.created_at ? new Date(user.created_at).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  }) : 'N/A'}
+                  {user?._id ? "Recently" : "N/A"}
                 </p>
               </div>
             </div>

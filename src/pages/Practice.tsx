@@ -9,6 +9,7 @@ import { getAudioForLetter } from "@/data/tuluLetterAudio";
 import { motion, AnimatePresence } from "framer-motion";
 import Footer from "@/components/Footer";
 import WritingPractice from "./WritingPractice";
+import { api } from "@/services/api";
 
 // ✅ Practice data
 const vowels = [
@@ -128,8 +129,13 @@ const Practice = () => {
     setShowPractice(false);
   };
 
-  const markAsCompleted = () => {
+  const markAsCompleted = async () => {
     setCompletedItems(prev => new Set(prev).add(currentLetter.letter));
+    try {
+      await api.logLearn(currentLetter.letter);
+    } catch (err) {
+      console.error("Failed to log completion", err);
+    }
   };
 
   const isCompleted = completedItems.has(currentLetter.letter);
@@ -139,7 +145,7 @@ const Practice = () => {
       {/* Header */}
       <section className="bg-gradient-to-b from-muted/30 to-background py-12 border-b border-border">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl font-bold mb-4 bg-gradient-hero bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold mb-4 text-red-700 drop-shadow-sm">
             Practice Writing
           </h1>
           <p className="text-muted-foreground text-lg">
@@ -234,9 +240,7 @@ const Practice = () => {
                       />
                     )}
 
-                    <div className="text-4xl font-semibold mb-4 text-foreground">
-  {currentLetter.letter}
-</div>
+
 
 
 
@@ -313,6 +317,7 @@ const Practice = () => {
                         <WritingPractice
                           letter={currentLetter.letter}
                           image={currentLetter.image}
+                          transliteration={currentLetter.transliteration}
                         />
                       </motion.div>
                     )}
@@ -372,19 +377,19 @@ const Practice = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto grid md:grid-cols-3 gap-6">
             <Card className="p-6 text-center bg-gradient-card shadow-card border-border/50">
-              <div className="text-3xl font-bold bg-gradient-hero bg-clip-text text-transparent mb-2">
+              <div className="text-3xl font-bold text-red-700 mb-2">
                 {completedItems.size}
               </div>
               <p className="text-muted-foreground">Items Completed</p>
             </Card>
             <Card className="p-6 text-center bg-gradient-card shadow-card border-border/50">
-              <div className="text-3xl font-bold bg-gradient-hero bg-clip-text text-transparent mb-2">
+              <div className="text-3xl font-bold text-red-700 mb-2">
                 {currentIndex + 1}
               </div>
               <p className="text-muted-foreground">Current Position</p>
             </Card>
             <Card className="p-6 text-center bg-gradient-card shadow-card border-border/50">
-              <div className="text-3xl font-bold bg-gradient-hero bg-clip-text text-transparent mb-2">
+              <div className="text-3xl font-bold text-red-700 mb-2">
                 {vowels.length + consonants.length + numbers.length}
               </div>
               <p className="text-muted-foreground">Total Items</p>

@@ -75,53 +75,61 @@
   }
 
   .dark {
-    /* Dark Theme: Deep Temple Brown/Black */
-    --background: 20 30% 8%; 
-    --foreground: 40 30% 90%;
+    /* Dark Theme: Premium Obsidian & Gold */
+    --background: 222 15% 8%; /* Deep Obsidian */
+    --foreground: 40 20% 90%; /* Soft Cream Text */
 
-    --card: 20 30% 12%; 
-    --card-foreground: 40 30% 90%;
+    --card: 222 15% 12%; 
+    --card-foreground: 40 20% 90%;
 
-    --popover: 20 30% 12%;
-    --popover-foreground: 40 30% 90%;
+    --popover: 222 15% 12%;
+    --popover-foreground: 40 20% 90%;
 
-    --primary: 35 80% 60%; /* Bright Gold */
-    --primary-foreground: 20 30% 10%;
+    --primary: 35 90% 60%; /* Vibrant Gold */
+    --primary-foreground: 222 30% 10%;
 
-    --secondary: 10 50% 40%;
-    --secondary-foreground: 40 30% 90%;
+    --secondary: 222 20% 18%; /* Dark Slate for secondary elements */
+    --secondary-foreground: 40 20% 90%;
 
-    --muted: 20 30% 16%;
-    --muted-foreground: 40 20% 70%;
+    --muted: 222 20% 16%;
+    --muted-foreground: 215 15% 70%;
 
-    --accent: 10 70% 55%;
-    --accent-foreground: 40 30% 95%;
+    --accent: 35 90% 60%; /* Gold Accent */
+    --accent-foreground: 222 30% 10%;
 
-    --success: 85 45% 45%; 
-    --success-foreground: 40 30% 95%;
+    --success: 142 70% 50%; /* Vibrant Green */
+    --success-foreground: 222 30% 10%;
 
-    --destructive: 0 60% 40%;
-    --destructive-foreground: 40 30% 95%;
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 40 20% 90%;
 
-    --border: 20 30% 20%;
-    --input: 20 30% 20%;
+    --border: 222 20% 20%;
+    --input: 222 20% 20%;
     --ring: 35 80% 60%;
 
+    /* Premium Dark Gradients */
     --gradient-hero: linear-gradient(
-      160deg,
-      hsl(20 30% 8%) 0%,
-      hsl(20 30% 12%) 100%
+      180deg,
+      hsl(222 15% 6%) 0%,
+      hsl(222 15% 10%) 100%
     );
 
     --gradient-card: linear-gradient(
       145deg,
-      rgba(40, 30, 25, 0.9) 0%,
-      rgba(30, 20, 15, 0.8) 100%
+      rgba(255, 255, 255, 0.05) 0%,
+      rgba(255, 255, 255, 0.02) 100%
     );
 
-    --shadow-soft: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
-    --shadow-card: 0 10px 40px -4px rgba(0, 0, 0, 0.6);
-    --shadow-glow: 0 0 30px rgba(212, 175, 55, 0.15);
+    /* Text Gradient: Gold to Amber */
+    --gradient-text: linear-gradient(
+        90deg,
+        hsl(35 90% 60%),
+        hsl(45 90% 70%)
+    );
+
+    --shadow-soft: 0 4px 20px -2px rgba(0, 0, 0, 0.7);
+    --shadow-card: 0 10px 40px -4px rgba(0, 0, 0, 0.8);
+    --shadow-glow: 0 0 30px rgba(234, 179, 8, 0.15);
   }
 }
 

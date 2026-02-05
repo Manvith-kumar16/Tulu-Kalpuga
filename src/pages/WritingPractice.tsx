@@ -1,8 +1,10 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { Eraser, RefreshCw, Check, AlertTriangle } from "lucide-react";
+import { Eraser, RefreshCw, Check, AlertTriangle, Eye, EyeOff } from "lucide-react";
 import { api } from "@/services/api";
+import StrokeTraceAnimation from "@/components/StrokeTraceAnimation";
+import { getStrokePaths } from "@/data/tuluStrokePaths";
 
 interface WritingPracticeProps {
   letter: string;
@@ -165,9 +167,12 @@ const WritingPractice = ({ letter, image, transliteration }: WritingPracticeProp
   };
 
   const [showStrokes, setShowStrokes] = useState(false);
+  const [showGuide, setShowGuide] = useState(true); // Toggle for static background guide
 
   // ... (existing functions)
 
+  // Check if we have SVG data for this letter
+  const svgStrokeData = useMemo(() => getStrokePaths(transliteration || letterToTransliteration[letter] || ""), [letter, transliteration]);
   const strokeGif = `/images/Strokes/${transliteration || letter}.gif`;
 
   return (
@@ -184,7 +189,7 @@ const WritingPractice = ({ letter, image, transliteration }: WritingPracticeProp
       </motion.h2>
 
       <div className="relative border-2 border-border rounded-2xl shadow-md overflow-hidden bg-white">
-        {image && (
+        {image && showGuide && (
           <img
             src={image}
             alt={letter}
@@ -194,18 +199,22 @@ const WritingPractice = ({ letter, image, transliteration }: WritingPracticeProp
 
         {/* Stroke Order Overlay */}
         {showStrokes && (
-          <div className="absolute inset-0 bg-white/90 z-10 flex items-center justify-center pointer-events-none">
-            <img
-              src={strokeGif}
-              alt="Stroke Order"
-              className="w-full h-full object-contain"
-              onError={(e) => {
-                (e.target as HTMLImageElement).style.display = 'none';
-                // Add a fallback text or icon here if needed in a parent container, 
-                // but for now hiding the broken image is cleaner.
-              }}
-            />
-            <p className="absolute bottom-2 text-xs text-muted-foreground">Watching Stroke Order</p>
+          <div className="absolute inset-0 bg-white z-20 flex items-center justify-center">
+            {svgStrokeData ? (
+              <StrokeTraceAnimation strokeData={svgStrokeData} />
+            ) : (
+              <div className="relative w-full h-full flex items-center justify-center">
+                <img
+                  src={strokeGif}
+                  alt="Stroke Order"
+                  className="w-full h-full object-contain"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = 'none';
+                  }}
+                />
+                <p className="absolute bottom-2 text-xs text-muted-foreground pointer-events-none">Watching Stroke GIF</p>
+              </div>
+            )}
           </div>
         )}
 
@@ -231,7 +240,15 @@ const WritingPractice = ({ letter, image, transliteration }: WritingPracticeProp
           variant="outline"
           className="gap-2 border-primary/20 text-primary hover:bg-primary/5"
         >
-          {showStrokes ? "Hide Strokes" : "Watch Strokes"}
+          {showStrokes ? "Hide Animation" : "Watch Animation"}
+        </Button>
+        <Button
+          onClick={() => setShowGuide(!showGuide)}
+          variant="outline"
+          className="gap-2 border-primary/20 text-primary hover:bg-primary/5"
+        >
+          {showGuide ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          {showGuide ? "Hide Guide" : "Show Guide"}
         </Button>
         <Button
           onClick={checkWriting}

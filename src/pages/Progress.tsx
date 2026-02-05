@@ -4,6 +4,7 @@ import { Trophy, Star, Target, TrendingUp, CheckCircle2, Loader2 } from "lucide-
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/services/api";
 import { formatDistanceToNow } from "date-fns";
+import ContributionGraph from "@/components/ContributionGraph";
 
 const Progress = () => {
   const { data: progressData, isLoading, error } = useQuery({
@@ -103,6 +104,10 @@ const Progress = () => {
                 )}
               </Card>
             ))}
+          </div>
+
+          <div className="mb-12 animate-fade-in" style={{ animationDelay: '300ms' }}>
+            <ContributionGraph data={progressData?.stats || { lettersLearned: [], quizScores: [] }} />
           </div>
 
           {/* Achievements */}

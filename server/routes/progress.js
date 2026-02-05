@@ -26,6 +26,9 @@ router.post('/learn', auth, async (req, res) => {
             await user.save();
         }
 
+        // Update Streak
+        await user.updateStreak();
+
         res.json(user.stats);
     } catch (err) {
         console.error(err.message);
@@ -49,6 +52,10 @@ router.post('/practice', auth, async (req, res) => {
         if (user.recentActivity.length > 10) user.recentActivity.pop();
 
         await user.save();
+
+        // Update Streak
+        await user.updateStreak();
+
         res.json(user.stats);
     } catch (err) {
         console.error(err.message);
@@ -72,6 +79,10 @@ router.post('/quiz', auth, async (req, res) => {
         if (user.recentActivity.length > 10) user.recentActivity.pop();
 
         await user.save();
+
+        // Update Streak
+        await user.updateStreak();
+
         res.json(user.stats);
     } catch (err) {
         console.error(err.message);

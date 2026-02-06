@@ -131,15 +131,24 @@ const LetterCard = ({
               whileHover={{ scale: 1.05 }}
             />
           ) : (
-            <motion.div
-              className="text-6xl font-bold mb-4 bg-gradient-hero bg-clip-text text-transparent"
-              whileHover={{ scale: 1.1 }}
-            >
-              {letter}
-            </motion.div>
+            <div className="flex flex-col items-center gap-3 mb-4">
+              {/* English Alphabet (Plain) */}
+              <span className="text-2xl font-semibold text-foreground bg-clip-text">
+                {transliteration}
+              </span>
+
+              {/* Tulu/Kannada Alphabet (Brown Circle) */}
+              <motion.div
+                className="w-20 h-20 rounded-full bg-[#8B4513] text-white flex items-center justify-center text-4xl font-bold shadow-lg ring-2 ring-orange-900/20"
+                whileHover={{ scale: 1.1, rotate: 5 }}
+              >
+                {letter}
+              </motion.div>
+            </div>
           )}
 
-          <div className="text-lg font-semibold text-foreground mb-2">{transliteration}</div>
+          {/* Hidden original Transliteration as it is now top */}
+          {/* <div className="text-lg font-semibold text-foreground mb-2">{transliteration}</div> */}
 
           <Badge variant="secondary" className="mb-4">
             {pronunciation}

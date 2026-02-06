@@ -58,10 +58,10 @@ const ContributionGraph = ({ data }: ContributionGraphProps) => {
     // Color scale function
     const getColor = (count: number) => {
         if (count === 0) return "bg-muted/40";
-        if (count === 1) return "bg-green-200 dark:bg-green-900/40";
-        if (count <= 3) return "bg-green-300 dark:bg-green-800/60";
-        if (count <= 5) return "bg-green-400 dark:bg-green-600";
-        return "bg-green-600 dark:bg-green-500"; // High activity
+        if (count === 1) return "bg-orange-200 dark:bg-orange-900/40";
+        if (count <= 3) return "bg-orange-300 dark:bg-orange-800/60";
+        if (count <= 5) return "bg-orange-400 dark:bg-orange-600";
+        return "bg-orange-500 dark:bg-orange-500"; // High activity
     };
 
     const getIntensityLabel = (count: number) => {
@@ -73,7 +73,7 @@ const ContributionGraph = ({ data }: ContributionGraphProps) => {
     return (
         <Card className="p-6 bg-gradient-card shadow-card border-border/50 overflow-x-auto">
             <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-sm bg-green-500 animate-pulse" />
+                <span className="w-2 h-2 rounded-sm bg-orange-500 animate-pulse" />
                 Activity Map
             </h2>
 
@@ -116,9 +116,9 @@ const ContributionGraph = ({ data }: ContributionGraphProps) => {
                 <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
                     <span>Less</span>
                     <div className="w-3 h-3 rounded-[2px] bg-muted/40" />
-                    <div className="w-3 h-3 rounded-[2px] bg-green-200 dark:bg-green-900/40" />
-                    <div className="w-3 h-3 rounded-[2px] bg-green-400 dark:bg-green-600" />
-                    <div className="w-3 h-3 rounded-[2px] bg-green-600 dark:bg-green-500" />
+                    <div className="w-3 h-3 rounded-[2px] bg-orange-200 dark:bg-orange-900/40" />
+                    <div className="w-3 h-3 rounded-[2px] bg-orange-400 dark:bg-orange-600" />
+                    <div className="w-3 h-3 rounded-[2px] bg-orange-500 dark:bg-orange-500" />
                     <span>More</span>
                 </div>
             </div>

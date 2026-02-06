@@ -204,15 +204,75 @@ const WritingPractice = ({ letter, image, transliteration }: WritingPracticeProp
               <StrokeTraceAnimation strokeData={svgStrokeData} />
             ) : (
               <div className="relative w-full h-full flex items-center justify-center">
-                <img
-                  src={strokeGif}
-                  alt="Stroke Order"
-                  className="w-full h-full object-contain"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = 'none';
-                  }}
-                />
-                <p className="absolute bottom-2 text-xs text-muted-foreground pointer-events-none">Watching Stroke GIF</p>
+                {/* Simulated Stroke Animation (Reveal) */}
+                {image ? (
+                  <>
+                    <div className="relative w-48 h-48">
+                      {/* Background Guide (Faint) */}
+                      <img
+                        src={image}
+                        alt="Guide"
+                        className="absolute inset-0 w-full h-full object-contain opacity-20 grayscale"
+                      />
+
+                      {/* Animated Reveal Layer (Step-by-Step) */}
+                      <motion.div
+                        initial={{ clipPath: "inset(0 100% 0 0)" }}
+                        animate={{
+                          clipPath: [
+                            "inset(0 100% 0 0)", // 0% - Start
+                            "inset(0 66% 0 0)",  // 20% - Step 1
+                            "inset(0 66% 0 0)",  // 35% - Pause
+                            "inset(0 33% 0 0)",  // 55% - Step 2
+                            "inset(0 33% 0 0)",  // 70% - Pause
+                            "inset(0 0 0 0)",    // 90% - Step 3 (Full)
+                            "inset(0 0 0 0)"     // 100% - Hold
+                          ]
+                        }}
+                        transition={{
+                          duration: 4,
+                          times: [0, 0.2, 0.35, 0.55, 0.7, 0.9, 1], // Explicit timing
+                          ease: "easeInOut",
+                          repeat: Infinity,
+                          repeatDelay: 1
+                        }}
+                        className="absolute inset-0 w-full h-full"
+                      >
+                        <img
+                          src={image}
+                          alt="Stroke Animation"
+                          className="w-full h-full object-contain drop-shadow-md"
+                        />
+                      </motion.div>
+                    </div>
+
+                    {/* Status Indicator */}
+                    <div className="absolute bottom-4 flex flex-col items-center gap-1">
+                      <p className="text-xs font-medium text-muted-foreground animate-pulse bg-white/80 px-2 py-1 rounded-full border border-border/50">
+                        Simulating Stroke Steps...
+                      </p>
+                      <div className="flex gap-1">
+                        <motion.div
+                          animate={{ opacity: [0.3, 1, 0.3] }}
+                          transition={{ duration: 1.5, repeat: Infinity, delay: 0 }}
+                          className="w-1.5 h-1.5 rounded-full bg-primary"
+                        />
+                        <motion.div
+                          animate={{ opacity: [0.3, 1, 0.3] }}
+                          transition={{ duration: 1.5, repeat: Infinity, delay: 0.5 }}
+                          className="w-1.5 h-1.5 rounded-full bg-primary"
+                        />
+                        <motion.div
+                          animate={{ opacity: [0.3, 1, 0.3] }}
+                          transition={{ duration: 1.5, repeat: Infinity, delay: 1.0 }}
+                          className="w-1.5 h-1.5 rounded-full bg-primary"
+                        />
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <p className="text-sm text-muted-foreground">No animation available</p>
+                )}
               </div>
             )}
           </div>

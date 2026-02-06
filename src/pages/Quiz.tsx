@@ -1,16 +1,14 @@
-import React, { useMemo, useState } from "react";
-import { Card } from "@/components/ui/card";
+import React, { useMemo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Trophy, Gamepad2, Heart, Zap, Play, Check, X, ArrowRight } from "lucide-react";
+import { Trophy, Gamepad2, Heart, Zap, Play, Check, X, ArrowRight, RotateCcw, Sparkles } from "lucide-react";
 import { vowelAudio, consonantAudio } from "@/data/tuluLetterAudio";
 import { api } from "@/services/api";
 import { motion, AnimatePresence } from "framer-motion";
 
 // ----- CONFIG -----
 const TOTAL_QUESTIONS = 10;
-const MAX_LIVES = 10;
+const MAX_LIVES = 5; // Reduced lives for higher stakes feeling
 
 // ----- DATA MODEL -----
 type Item = {
@@ -21,7 +19,7 @@ type Item = {
   kind: "vowel" | "consonant" | "number";
 };
 
-// Image Maps (Same as before)
+// Image Maps
 const vowelImageMap: Record<string, string> = {
   "a": "/images/Vowels/a.png", "ā": "/images/Vowels/AA.png", "i": "/images/Vowels/i.png",
   "ī": "/images/Vowels/ii.png", "u": "/images/Vowels/u.png", "ū": "/images/Vowels/uu.png",
@@ -79,6 +77,14 @@ const Quiz: React.FC = () => {
   const [showAnswer, setShowAnswer] = useState(false);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [category, setCategory] = useState<"vowels" | "consonants" | "numbers" | "hybrid">("hybrid");
+
+  // Prevent scroll when quiz is active to ensure fit-to-screen
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, []);
 
   const buildQuestions = (pool: Item[]) => {
     const base = shuffle(pool);
@@ -139,7 +145,7 @@ const Quiz: React.FC = () => {
         api.logQuiz(finalScore, questions.length * 10).catch(console.error);
         setScore(finalScore);
 
-        // Game over trigger handled by render logic
+        // Ensure index goes out of bounds to trigger result screen
         setIndex(i => i + 1);
       }
     }, 1200);
@@ -149,200 +155,245 @@ const Quiz: React.FC = () => {
   const current = questions[index];
 
   return (
-    <div className="min-h-screen py-12 px-4 flex flex-col items-center justify-center">
+    // Main container locking height to viewport minus header (approx)
+    <div className="relative h-[calc(100vh-4rem)] bg-[#FFFDF7] dark:bg-zinc-950 overflow-hidden flex flex-col items-center justify-center font-sans text-amber-950 dark:text-amber-50">
 
-      {/* HEADER */}
-      <motion.div
-        initial={{ y: -20, opacity: 0 }}
+      {/* Background Ambience */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute -top-24 -left-24 w-96 h-96 bg-amber-400/20 rounded-full blur-[100px]" />
+        <div className="absolute top-1/2 -right-24 w-80 h-80 bg-orange-400/10 rounded-full blur-[80px]" />
+        <div className="absolute bottom-0 left-1/3 w-full h-64 bg-gradient-to-t from-amber-100/40 to-transparent dark:from-amber-900/20" />
+      </div>
+
+      {/* HEADER (Always visible but minimal) */}
+      <motion.nav
+        initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="text-center mb-8 max-w-2xl"
+        className="absolute top-6 w-full max-w-4xl px-6 flex justify-between items-center z-20"
       >
-        <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase mb-2 inline-block">
-          Tulu Mastery
-        </span>
-        <h1 className="text-4xl md:text-5xl font-bold mb-4">
-          <span className="text-gradient">Tulu Lipi Challenge</span>
-        </h1>
-        <p className="text-muted-foreground text-lg">
-          Master the ancient script through play. Keep your streak alive!
-        </p>
-      </motion.div>
+        {!started && (
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white shadow-md">
+              <Gamepad2 className="w-5 h-5" />
+            </div>
+            <span className="font-bold text-lg tracking-tight">Tulu Mastery</span>
+          </div>
+        )}
 
-      {/* VIEW: START SCREEN */}
-      {!started && (
-        <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          className="w-full max-w-4xl grid md:grid-cols-2 gap-8"
-        >
-          <div className="glass-panel rounded-3xl p-8 flex flex-col justify-center">
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-              <Gamepad2 className="w-6 h-6 text-primary" /> How to Play
-            </h2>
-            <div className="space-y-6">
-              <div className="flex gap-4 items-start">
-                <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center shrink-0">
-                  <Zap className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <h3 className="font-semibold">Answer quickly</h3>
-                  <p className="text-sm text-muted-foreground">Select the correct transliteration for the Tulu character.</p>
-                </div>
+        {started && !quizOver && (
+          <div className="w-full">
+            {/* Game HUD */}
+            <div className="flex items-center justify-between gap-4 w-full">
+
+              {/* Lives */}
+              <div className="flex items-center gap-1.5 bg-white/50 dark:bg-black/20 backdrop-blur-md px-3 py-1.5 rounded-full border border-red-200/50 shadow-sm">
+                <Heart className={`w-5 h-5 ${lives > 0 ? 'fill-red-500 text-red-500' : 'text-muted-foreground'}`} />
+                <span className="font-bold text-red-600 dark:text-red-400">{lives}</span>
               </div>
-              <div className="flex gap-4 items-start">
-                <div className="w-10 h-10 rounded-xl bg-destructive/20 flex items-center justify-center shrink-0">
-                  <Heart className="w-5 h-5 text-destructive" />
-                </div>
-                <div>
-                  <h3 className="font-semibold">Watch your lives</h3>
-                  <p className="text-sm text-muted-foreground">You have {MAX_LIVES} lives. Wrong answers cost a heart.</p>
-                </div>
-              </div>
-            </div>
-          </div>
 
-          <div className="glass-panel rounded-3xl p-8">
-            <h2 className="text-2xl font-bold mb-6">Choose Mode</h2>
-            <div className="grid grid-cols-2 gap-4">
-              {[
-                { id: 'vowels', label: 'Vowels', desc: 'Master Swaras' },
-                { id: 'consonants', label: 'Consonants', desc: 'Learn Vyanjanas' },
-                { id: 'numbers', label: 'Numbers', desc: 'Count in Tulu' },
-                { id: 'hybrid', label: 'Mixed', desc: 'Full Challenge', full: true }
-              ].map((mode: any) => (
-                <button
-                  key={mode.id}
-                  onClick={() => startQuiz(mode.id)}
-                  className={`
-                                group relative overflow-hidden rounded-2xl p-4 text-left transition-all hover:scale-[1.02]
-                                ${mode.full ? 'col-span-2 bg-primary text-primary-foreground shadow-lg shadow-primary/25' : 'bg-white dark:bg-zinc-900 border hover:border-primary/50'}
-                            `}
-                >
-                  <span className="relative z-10 flex flex-col h-full justify-between">
-                    <span className={`text-lg font-bold ${mode.full ? 'text-white' : 'text-foreground'}`}>{mode.label}</span>
-                    <span className={`text-xs ${mode.full ? 'text-white/80' : 'text-muted-foreground'}`}>{mode.desc}</span>
-                  </span>
-                  <div className={`absolute right-3 bottom-3 opacity-0 group-hover:opacity-100 transition-opacity ${mode.full ? 'text-white' : 'text-primary'}`}>
-                    <Play className="w-6 h-6 fill-current" />
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-        </motion.div>
-      )}
-
-      {/* VIEW: ACTIVE QUIZ */}
-      {started && !quizOver && current && (
-        <div className="w-full max-w-2xl">
-          {/* Stats Bar */}
-          <div className="flex justify-between items-center mb-6 glass-card px-6 py-3 rounded-full">
-            <div className="flex items-center gap-2 text-destructive font-bold">
-              <Heart className="fill-current w-5 h-5" /> <span>{lives}</span>
-            </div>
-            <div className="flex-1 mx-8 relative h-2 bg-muted rounded-full overflow-hidden">
-              <motion.div
-                className="absolute top-0 left-0 h-full bg-primary"
-                initial={{ width: 0 }}
-                animate={{ width: `${(index / TOTAL_QUESTIONS) * 100}%` }}
-              />
-            </div>
-            <div className="flex items-center gap-2 text-primary font-bold">
-              <Trophy className="w-5 h-5" /> <span>{score}</span>
-            </div>
-          </div>
-
-          {/* Question Card */}
-          <motion.div
-            key={index}
-            initial={{ rotateX: 90, opacity: 0 }}
-            animate={{ rotateX: 0, opacity: 1 }}
-            exit={{ rotateX: -90, opacity: 0 }}
-            transition={{ duration: 0.4 }}
-            className="glass-panel rounded-3xl p-8 md:p-12 mb-8 text-center"
-          >
-            <div className="mb-8 relative flex justify-center">
-              <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150 opacity-50" />
-              {current.imageSrc && (
-                <img
-                  src={current.imageSrc}
-                  alt="Identify this character"
-                  className="w-40 h-40 md:w-56 md:h-56 object-contain relative z-10 drop-shadow-2xl"
+              {/* Progress Bar */}
+              <div className="flex-1 max-w-md relative h-3 bg-amber-100 dark:bg-amber-900/30 rounded-full overflow-hidden shadow-inner">
+                <motion.div
+                  className="absolute top-0 left-0 h-full bg-gradient-to-r from-amber-400 to-orange-500"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${((index) / TOTAL_QUESTIONS) * 100}%` }}
+                  transition={{ type: "spring", stiffness: 50 }}
                 />
-              )}
+              </div>
+
+              {/* Score */}
+              <div className="flex items-center gap-1.5 bg-white/50 dark:bg-black/20 backdrop-blur-md px-3 py-1.5 rounded-full border border-amber-200/50 shadow-sm">
+                <Trophy className="w-5 h-5 text-amber-500" />
+                <span className="font-bold text-amber-700 dark:text-amber-400">{score}</span>
+              </div>
+
             </div>
+          </div>
+        )}
+      </motion.nav>
 
-            <h3 className="text-xl font-medium text-muted-foreground mb-8">What symbol is this?</h3>
+      <div className="relative z-10 w-full max-w-4xl px-4 flex flex-col items-center">
 
-            <div className="grid grid-cols-2 gap-4">
-              {current.options.map((opt) => {
-                const isSelected = selected === opt;
-                const isCorrect = opt === current.correct;
-                const showState = showAnswer;
+        {/* VIEW: START SCREEN */}
+        <AnimatePresence mode="wait">
+          {!started && (
+            <motion.div
+              key="start-screen"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.05 }}
+              className="text-center w-full"
+            >
+              <h1 className="text-5xl md:text-7xl font-black mb-6 tracking-tight bg-gradient-to-br from-amber-600 to-orange-700 bg-clip-text text-transparent drop-shadow-sm">
+                Tulu Lipi Challenge
+              </h1>
+              <p className="text-xl text-amber-800/60 dark:text-amber-200/60 mb-12 max-w-lg mx-auto leading-relaxed">
+                Test your knowledge of the ancient script. Race against time and keep your streak alive!
+              </p>
 
-                let variantStyle = "bg-white dark:bg-zinc-800 hover:border-primary border-transparent";
-                if (showState) {
-                  if (isCorrect) variantStyle = "bg-green-500 text-white border-green-600 shadow-lg shadow-green-500/30";
-                  else if (isSelected) variantStyle = "bg-red-500 text-white border-red-600";
-                  else variantStyle = "opacity-50";
-                }
-
-                return (
-                  <button
-                    key={opt}
-                    disabled={showAnswer}
-                    onClick={() => handleAnswer(opt)}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+                {[
+                  { id: 'vowels', label: 'Vowels', desc: 'Swaras', icon: 'Aa' },
+                  { id: 'consonants', label: 'Consonants', desc: 'Vyanjanas', icon: 'Ka' },
+                  { id: 'numbers', label: 'Numbers', desc: 'Counting', icon: '123' },
+                  { id: 'hybrid', label: 'Mixed', desc: 'Full Test', icon: '★', full: true }
+                ].map((mode: any) => (
+                  <motion.button
+                    key={mode.id}
+                    whileHover={{ y: -5, transition: { duration: 0.2 } }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => startQuiz(mode.id)}
                     className={`
-                                    h-16 rounded-xl font-bold text-xl border-2 transition-all duration-200 transform
-                                    ${variantStyle}
-                                    ${!showAnswer && "active:scale-95 hover:-translate-y-1"}
-                                `}
+                            relative overflow-hidden rounded-3xl p-6 text-left transition-all shadow-xl
+                            ${mode.full
+                        ? 'bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-orange-500/30 ring-2 ring-orange-400/50'
+                        : 'bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/50 shadow-amber-900/5 hover:border-amber-400/50'
+                      }
+                        `}
                   >
-                    {opt}
-                  </button>
-                );
-              })}
-            </div>
-          </motion.div>
-        </div>
-      )}
+                    <div className={`text-4xl font-bold mb-4 opacity-20 ${mode.full ? 'text-white' : 'text-amber-900'}`}>
+                      {mode.icon}
+                    </div>
+                    <div className="relative z-10">
+                      <h3 className="font-bold text-lg mb-1">{mode.label}</h3>
+                      <p className={`text-sm ${mode.full ? 'text-white/80' : 'text-muted-foreground'}`}>{mode.desc}</p>
+                    </div>
+                    <div className={`absolute bottom-4 right-4 p-2 rounded-full ${mode.full ? 'bg-white/20' : 'bg-amber-100 dark:bg-amber-900/30'}`}>
+                      <Play className={`w-4 h-4 ${mode.full ? 'fill-white text-white' : 'fill-amber-600 text-amber-600'}`} />
+                    </div>
+                  </motion.button>
+                ))}
+              </div>
+            </motion.div>
+          )}
 
-      {/* VIEW: RESULTS */}
-      {started && quizOver && (
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          className="glass-panel rounded-3xl p-12 max-w-lg w-full text-center"
-        >
-          <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Trophy className="w-12 h-12 text-primary" />
-          </div>
+          {/* VIEW: ACTIVE QUIZ */}
+          {started && !quizOver && current && (
+            <motion.div
+              key="question-screen"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="w-full max-w-sm md:max-w-3xl flex flex-col md:flex-row items-center gap-8 md:gap-16"
+            >
+              {/* Visual Card Side */}
+              <div className="flex-1 w-full relative group">
+                <div className="absolute inset-0 bg-amber-400/30 rounded-[3rem] blur-2xl transform group-hover:scale-105 transition-transform duration-700 opacity-60" />
+                <motion.div
+                  key={current.correct}
+                  initial={{ rotateY: -10, opacity: 0 }}
+                  animate={{ rotateY: 0, opacity: 1 }}
+                  exit={{ rotateY: 10, opacity: 0 }}
+                  transition={{ duration: 0.4 }}
+                  className="relative bg-white/60 dark:bg-zinc-900/60 backdrop-blur-xl border border-white/40 shadow-2xl shadow-amber-900/10 rounded-[2.5rem] p-12 aspect-square flex items-center justify-center overflow-hidden"
+                >
+                  {current.imageSrc && (
+                    <img
+                      src={current.imageSrc}
+                      alt="Identify this character"
+                      className="w-full h-full object-contain filter drop-shadow-xl transform transition-transform group-hover:scale-110 duration-500"
+                    />
+                  )}
+                  <div className="absolute bottom-6 text-sm font-semibold tracking-widest uppercase text-amber-900/40 dark:text-amber-100/40">
+                    Identify
+                  </div>
+                </motion.div>
+              </div>
 
-          <h2 className="text-3xl font-bold mb-2">Quiz Complete!</h2>
-          <p className="text-muted-foreground mb-8">You showed great mastery of Tulu Lipi.</p>
+              {/* Options Side */}
+              <div className="flex-1 w-full space-y-8">
+                <div className="text-center md:text-left">
+                  <h2 className="text-3xl font-bold text-amber-950 dark:text-amber-50">What is this?</h2>
+                  <p className="text-amber-800/60 dark:text-amber-200/60">Select the correct matching sound.</p>
+                </div>
 
-          <div className="grid grid-cols-2 gap-4 mb-8">
-            <div className="p-4 rounded-2xl bg-muted/50">
-              <div className="text-sm text-muted-foreground uppercase text-xs font-bold tracking-wider">Score</div>
-              <div className="text-3xl font-bold text-primary">{score}</div>
-            </div>
-            <div className="p-4 rounded-2xl bg-muted/50">
-              <div className="text-sm text-muted-foreground uppercase text-xs font-bold tracking-wider">Streak</div>
-              <div className="text-3xl font-bold text-foreground">{streak}</div>
-            </div>
-          </div>
+                <div className="grid grid-cols-2 gap-4">
+                  {current.options.map((opt) => {
+                    const isSelected = selected === opt;
+                    const isCorrect = opt === current.correct;
+                    const state = showAnswer
+                      ? isCorrect ? 'correct' : isSelected ? 'wrong' : 'dim'
+                      : 'default';
 
-          <div className="flex gap-4">
-            <Button variant="outline" className="flex-1 h-12 rounded-xl" onClick={() => setStarted(false)}>
-              Back Home
-            </Button>
-            <Button size="lg" className="flex-1 h-12 rounded-xl text-lg font-bold shadow-lg shadow-primary/25" onClick={() => startQuiz(category)}>
-              Play Again
-            </Button>
-          </div>
-        </motion.div>
-      )}
+                    return (
+                      <motion.button
+                        key={opt}
+                        disabled={showAnswer}
+                        onClick={() => handleAnswer(opt)}
+                        whileHover={!showAnswer ? { scale: 1.02, y: -2 } : {}}
+                        whileTap={!showAnswer ? { scale: 0.98 } : {}}
+                        className={`
+                                        h-20 rounded-2xl text-2xl font-bold shadow-lg transition-all duration-300 relative overflow-hidden border-2
+                                        ${state === 'default' ? 'bg-white dark:bg-zinc-800 border-white/50 text-amber-950 dark:text-amber-50 hover:border-amber-400 hover:shadow-orange-200/50' : ''}
+                                        ${state === 'correct' ? 'bg-green-500 border-green-400 text-white shadow-green-500/40 scale-105 z-10' : ''}
+                                        ${state === 'wrong' ? 'bg-red-500 border-red-400 text-white shadow-red-500/40 shake' : ''}
+                                        ${state === 'dim' ? 'bg-gray-100 dark:bg-zinc-900 text-gray-400 border-transparent opacity-50 blur-[1px]' : ''}
+                                    `}
+                      >
+                        <span className="relative z-10">{opt}</span>
+                        {/* Particle burst could go here */}
+                        {state === 'correct' && (
+                          <motion.div
+                            initial={{ scale: 0 }} animate={{ scale: 1.5 }}
+                            className="absolute inset-0 bg-white/20 rounded-full"
+                          />
+                        )}
+                      </motion.button>
+                    );
+                  })}
+                </div>
+              </div>
+            </motion.div>
+          )}
 
+          {/* VIEW: RESULTS */}
+          {started && quizOver && (
+            <motion.div
+              key="result-screen"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-2xl p-12 rounded-[3rem] shadow-2xl text-center max-w-md w-full border border-white/50 relative overflow-hidden"
+            >
+              {/* Victory Burst Background */}
+              <div className="absolute inset-0 bg-gradient-to-br from-amber-400/20 to-orange-500/20 animate-pulse pointer-events-none" />
+
+              <div className="relative z-10">
+                <div className="inline-flex p-4 bg-gradient-to-br from-amber-400 to-orange-500 rounded-3xl shadow-lg shadow-orange-500/40 mb-8 mx-auto">
+                  <Trophy className="w-12 h-12 text-white" />
+                </div>
+
+                <h2 className="text-4xl font-black mb-2 text-amber-950 dark:text-amber-50">Score: {score}</h2>
+                <div className="flex justify-center items-center gap-2 mb-8 text-amber-700 dark:text-amber-300">
+                  <Sparkles className="w-4 h-4" />
+                  <span className="font-medium text-lg">Amazing Effort!</span>
+                  <Sparkles className="w-4 h-4" />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 mb-8">
+                  <div className="bg-amber-50 dark:bg-amber-950/50 p-4 rounded-2xl border border-amber-100 dark:border-amber-800">
+                    <p className="text-xs uppercase font-bold text-amber-500 mb-1">Total</p>
+                    <p className="text-2xl font-bold">{TOTAL_QUESTIONS}</p>
+                  </div>
+                  <div className="bg-amber-50 dark:bg-amber-950/50 p-4 rounded-2xl border border-amber-100 dark:border-amber-800">
+                    <p className="text-xs uppercase font-bold text-amber-500 mb-1">Streak</p>
+                    <p className="text-2xl font-bold">{streak}</p>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <Button onClick={() => startQuiz(category)} className="w-full h-14 text-lg rounded-2xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 shadow-lg shadow-orange-500/20">
+                    <RotateCcw className="w-5 h-5 mr-2" /> Play Again
+                  </Button>
+                  <Button variant="ghost" onClick={() => setStarted(false)} className="w-full h-14 text-base rounded-2xl text-amber-800 hover:bg-amber-100/50">
+                    Back to Menu
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+      </div>
     </div>
   );
 };

@@ -15,7 +15,7 @@ interface WritingPracticeProps {
 }
 
 // ML Backend URL - adjust if needed
-const ML_BACKEND_URL = "http://localhost:5001";
+const ML_BACKEND_URL = "https://tulu-kalpuga-ml.onrender.com";
 
 // Mapping from Tulu letters to transliterations (used as fallback)
 import { letterToTransliteration } from "@/data/tuluLetters";

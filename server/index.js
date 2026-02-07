@@ -9,8 +9,17 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
-app.use(cors());
+/* ================= CORS FIX ================= */
+
+app.use(cors({
+  origin: [
+    "https://tulukalpuga.vercel.app",
+    "https://tulu-kalpuga.vercel.app/",
+    "http://localhost:5173"
+  ],
+  credentials: true
+}));
+
 app.use(express.json());
 
 /* ================= DATABASE CONNECTION ================= */
@@ -32,12 +41,14 @@ app.get('/', (req, res) => {
   res.send('🚀 Tulu Kalpuga Backend Running');
 });
 
-/* ================= ML PROXY ================= */
+/* ================= ML PROXY (FIXED URL) ================= */
+
+const ML_URL = "https://tulu-kalpuga-ml.onrender.com/predict";
 
 app.post('/predict', async (req, res) => {
   try {
     const response = await axios.post(
-      "http://127.0.0.1:5001/predict",
+      ML_URL,
       req.body,
       { headers: { "Content-Type": "application/json" } }
     );
@@ -46,13 +57,14 @@ app.post('/predict', async (req, res) => {
 
   } catch (error) {
     console.error("❌ ML Proxy Error:", error.message);
+
     if (error.response) {
       console.error("ML Response Data:", error.response.data);
     }
 
     res.status(500).json({
       success: false,
-      message: "ML Service unavailable. Start Python ML server."
+      message: "ML Service unavailable."
     });
   }
 });

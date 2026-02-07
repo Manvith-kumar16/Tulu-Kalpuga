@@ -1,6 +1,6 @@
 import { toast } from "sonner";
 
-const API_URL = 'https://tulu-kalpuga.onrender.com';
+const API_URL = 'https://tulu-kalpuga.onrender.com/api';
 
 interface RequestOptions extends RequestInit {
     headers?: Record<string, string>;

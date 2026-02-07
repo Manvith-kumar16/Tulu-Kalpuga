@@ -58,4 +58,8 @@ if __name__ == "__main__":
     except Exception as e:
         print("Model not loaded at start:", e)
         print("Start server and call /predict after training model is created.")
-    app.run(host="0.0.0.0", port=5001, debug=True)
+import os
+
+port = int(os.environ.get("PORT", 10000))
+app.run(host="0.0.0.0", port=port)
+

@@ -10,6 +10,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import Footer from "@/components/Footer";
 import WritingPractice from "./WritingPractice";
 import { api } from "@/services/api";
+import { letterToTransliteration } from "@/data/tuluLetters";
+
 
 // ✅ Practice data
 const vowels = [
@@ -317,8 +319,9 @@ const Practice = () => {
                         <WritingPractice
                           letter={currentLetter.letter}
                           image={currentLetter.image}
-                          transliteration={currentLetter.transliteration}
+                          transliteration={letterToTransliteration[currentLetter.letter]}
                         />
+                      
                       </motion.div>
                     )}
                   </AnimatePresence>

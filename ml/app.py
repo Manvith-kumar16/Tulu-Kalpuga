@@ -41,6 +41,8 @@ def predict():
             "predictions": res["predictions"]
         })
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
 # alias endpoint used previously in your frontend

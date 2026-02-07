@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { OAuth2Client } = require('google-auth-library');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const User = require('../models/User');
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -20,6 +21,7 @@ router.post('/google', async (req, res) => {
         });
 
         const { name, email, sub: googleId, picture } = ticket.getPayload();
+        console.log("Google Auth Payload:", { name, email, googleId });
 
         let user = await User.findOne({ email });
 
@@ -32,10 +34,10 @@ router.post('/google', async (req, res) => {
         } else {
             // Create new user
             user = new User({
-                name,
+                fullName: name,
                 email,
                 googleId,
-                password: '' // handled by model schema
+                password: crypto.randomBytes(16).toString("hex")
             });
             await user.save();
         }
@@ -52,13 +54,16 @@ router.post('/google', async (req, res) => {
             { expiresIn: 360000 },
             (err, token) => {
                 if (err) throw err;
-                res.json({ token, user: { id: user.id, name: user.name, email: user.email } });
+                res.json({ token, user: { id: user.id, fullName: user.fullName, email: user.email } });
             }
         );
 
     } catch (err) {
         console.error("Google Auth Error:", err.message);
-        res.status(500).json({ msg: "Google Sign-In Failed" });
+        if (err.response) {
+            console.error("Error Response:", err.response.data);
+        }
+        res.status(500).json({ msg: "Google Sign-In Failed", error: err.message });
     }
 });
 

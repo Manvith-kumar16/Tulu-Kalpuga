@@ -1,43 +1,38 @@
 import { useRef, useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
-import { Eraser, RefreshCw, Check, AlertTriangle, Eye, EyeOff } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Eraser, RefreshCw, Check, AlertTriangle, Eye, EyeOff, Pen } from "lucide-react";
 import { api } from "@/services/api";
 import StrokeTraceAnimation from "@/components/StrokeTraceAnimation";
+import { SimpleLetterAnimation } from "@/components/SimpleLetterAnimation";
 import { getStrokePaths } from "@/data/tuluStrokePaths";
 
 interface WritingPracticeProps {
   letter: string;
   image?: string;
   transliteration?: string;
+  onClose?: () => void;
 }
 
 // ML Backend URL - adjust if needed
-const ML_BACKEND_URL = "http://localhost:5000";
+const ML_BACKEND_URL = "http://localhost:5001";
 
 // Mapping from Tulu letters to transliterations (used as fallback)
-const letterToTransliteration: Record<string, string> = {
-  "ಅ": "a", "ಆ": "aa", "ಇ": "i", "ಈ": "ii", "ಉ": "u", "ಊ": "uu",
-  "ಋ": "r", "ೠ": "rr", "ಎ": "e", "ಏ": "ee", "ಎೕ": "e_", "ಏೕ": "ee_",
-  "ಐ": "ai", "ಒ": "o", "ಓ": "oo", "ಔ": "au", "ಅಂ": "am", "ಅಃ": "ah",
-  "ಕ": "ka", "ಖ": "kha", "ಗ": "ga", "ಘ": "gha", "ಙ": "nga",
-  "ಚ": "ca", "ಛ": "cha", "ಜ": "ja", "ಝ": "jha", "ಞ": "nya",
-  "ಟ": "ta", "ಠ": "taa", "ಡ": "da", "ಢ": "daa", "ಣ": "na1",
-  "ತ": "tha", "ಥ": "thaa", "ದ": "dha", "ಧ": "dhaa", "ನ": "Na",
-  "ಪ": "Pa", "ಫ": "pha", "ಬ": "Ba", "ಭ": "Bha", "ಮ": "Ma",
-  "ಯ": "Ya", "ರ": "Ra", "ಲ": "La", "ವ": "Va", "ಶ": "Sha",
-  "ಷ": "SHha", "ಸ": "Sa", "ಹ": "Ha", "ಳ": "LLa", "ೞ": "raa", "ಱ": "laa",
-  "೦": "0", "೧": "1", "೨": "2", "೩": "3", "೪": "4",
-  "೫": "5", "೬": "6", "೭": "7", "೮": "8", "೯": "9", "೧೦": "10", "೧೦೦": "100"
-};
+import { letterToTransliteration } from "@/data/tuluLetters";
 
-const WritingPractice = ({ letter, image, transliteration }: WritingPracticeProps) => {
+
+const WritingPractice = ({ letter, image, transliteration, onClose }: WritingPracticeProps) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [context, setContext] = useState<CanvasRenderingContext2D | null>(null);
   const [isChecking, setIsChecking] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ correct: boolean; predicted: string; score: number } | null>(null);
+  const [showStrokes, setShowStrokes] = useState(false);
+  const [showGuide, setShowGuide] = useState(true);
+
+  // Check if we have SVG data for this letter
+  const svgStrokeData = useMemo(() => getStrokePaths(transliteration || letterToTransliteration[letter] || ""), [letter, transliteration]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -93,6 +88,50 @@ const WritingPractice = ({ letter, image, transliteration }: WritingPracticeProp
     if (!canvasRef.current) return;
 
     const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    // 1. Validate if canvas is empty or has too little content
+    const { width, height } = canvas;
+    const imageData = ctx.getImageData(0, 0, width, height);
+    const data = imageData.data;
+    let pixelCount = 0;
+
+    // Bounding box logic
+    let minX = width, minY = height, maxX = 0, maxY = 0;
+
+    // Check alpha channel (every 4th byte)
+    for (let i = 3; i < data.length; i += 4) {
+      if (data[i] > 10) { // If pixel is not transparent (using 10 as threshold for anti-aliasing)
+        pixelCount++;
+
+        // Calculate coordinate
+        const index = (i - 3) / 4;
+        const x = index % width;
+        const y = Math.floor(index / width);
+
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+      }
+    }
+
+    // Heuristic: Must have at least ~500 filled pixels OR cover a decent area
+    // A single dot might have ~30-50 pixels. A small line ~100-200.
+    // Let's require at least a small stroke.
+    const hasEnoughContent = pixelCount > 400;
+
+    // Also check bounding box size to avoid tiny squiggles
+    const contentWidth = maxX - minX;
+    const contentHeight = maxY - minY;
+    const hasDecentSize = contentWidth > 20 || contentHeight > 20;
+
+    if (!hasEnoughContent || !hasDecentSize) {
+      setError("Please write the full letter!"); // Clearer message
+      return;
+    }
+
     const expected = getExpectedTransliteration();
 
     if (!expected) {
@@ -105,8 +144,35 @@ const WritingPractice = ({ letter, image, transliteration }: WritingPracticeProp
     setResult(null);
 
     try {
-      // Convert canvas to base64
-      const base64Image = canvas.toDataURL("image/png");
+      // 2. Process Image: Flatten to White Background first, then Invert for Model
+      const tempCanvas = document.createElement("canvas");
+      tempCanvas.width = width;
+      tempCanvas.height = height;
+      const tCtx = tempCanvas.getContext("2d");
+
+      if (!tCtx) throw new Error("Could not create temp canvas");
+
+      // A. Create Black-on-White version first (Standard Drawing)
+      tCtx.fillStyle = "#ffffff";
+      tCtx.fillRect(0, 0, width, height);
+      tCtx.drawImage(canvas, 0, 0);
+
+      // B. Invert Colors (Make it White-on-Black)
+      // Standard ML models (like MNIST) usually expect white text on black background.
+      const imgData = tCtx.getImageData(0, 0, width, height);
+      const data = imgData.data;
+
+      for (let i = 0; i < data.length; i += 4) {
+        // Invert RGB: 255 (white) becomes 0 (black), 0 (black) becomes 255 (white)
+        data[i] = 255 - data[i];     // R
+        data[i + 1] = 255 - data[i + 1]; // G
+        data[i + 2] = 255 - data[i + 2]; // B
+        // Alpha (data[i+3]) remains 255
+      }
+
+      tCtx.putImageData(imgData, 0, 0);
+
+      const base64Image = tempCanvas.toDataURL("image/png");
 
       // Send to ML backend
       const response = await fetch(`${ML_BACKEND_URL}/predict`, {
@@ -124,20 +190,27 @@ const WritingPractice = ({ letter, image, transliteration }: WritingPracticeProp
         throw new Error(`Server responded with status ${response.status}`);
       }
 
-      const data = await response.json();
+      const responseData = await response.json();
 
-      if (data.error) {
-        throw new Error(data.error);
+      if (responseData.error) {
+        throw new Error(responseData.error);
       }
 
+      // Boost score by 20% but cap at 96%
+      let baseScore = responseData.score || 0;
+      let finalScore = Math.min(baseScore + 0.20, 0.96);
+
+      // User requested: Above 85% should always be green (correct)
+      const isCorrect = responseData.correct || finalScore >= 0.85;
+
       setResult({
-        correct: data.correct ?? false,
-        predicted: data.predicted || "",
-        score: data.score || 0,
+        correct: isCorrect,
+        predicted: responseData.predicted || "",
+        score: finalScore,
       });
 
       // Log progress if correct
-      if (data.correct) {
+      if (isCorrect) {
         try {
           await api.logPractice(letter);
           await api.logLearn(letter);
@@ -153,10 +226,6 @@ const WritingPractice = ({ letter, image, transliteration }: WritingPracticeProp
     }
   };
 
-  const tryAgain = () => {
-    clearCanvas();
-  };
-
   const getCursorPosition = (e: any) => {
     const canvas = canvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
@@ -166,193 +235,212 @@ const WritingPractice = ({ letter, image, transliteration }: WritingPracticeProp
     return { x: clientX - rect.left, y: clientY - rect.top };
   };
 
-  const [showStrokes, setShowStrokes] = useState(false);
-  const [showGuide, setShowGuide] = useState(true); // Toggle for static background guide
-
-  // ... (existing functions)
-
-  // Check if we have SVG data for this letter
-  const svgStrokeData = useMemo(() => getStrokePaths(transliteration || letterToTransliteration[letter] || ""), [letter, transliteration]);
   const strokeGif = `/images/Strokes/${transliteration || letter}.gif`;
 
   return (
-    <div className="flex flex-col items-center justify-center p-4">
-      <motion.h2
-        className="text-2xl font-bold mb-4 text-center"
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
-        Practice Writing:
-        {image && (
-          <img src={image} alt="Tulu Letter" className="inline-block h-10 w-10 ml-2 align-middle object-contain" />
+    <div className="flex flex-col relative w-full p-6">
+      {/* Header & Close */}
+      <div className="flex justify-between items-center mb-2 px-1">
+        <motion.h2
+          className="text-xl font-bold flex items-center gap-2 text-primary"
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+        >
+          <span>Practice:</span>
+          <span className="text-3xl text-red-600">{letter}</span>
+          <span className="text-muted-foreground text-lg font-normal">({getExpectedTransliteration()})</span>
+        </motion.h2>
+
+        {onClose && (
+          <Button
+            onClick={onClose}
+            variant="ghost"
+            size="icon"
+            className="rounded-full hover:bg-slate-100 -mr-2"
+          >
+            <span className="text-xl">✕</span>
+          </Button>
         )}
-      </motion.h2>
+      </div>
 
-      <div className="relative border-2 border-border rounded-2xl shadow-md overflow-hidden bg-white">
-        {image && showGuide && (
-          <img
-            src={image}
-            alt={letter}
-            className="absolute inset-0 w-full h-full object-contain opacity-30 pointer-events-none"
-          />
-        )}
+      <div className="flex flex-col md:flex-row gap-6 items-stretch justify-center">
+        {/* Left: Canvas Area */}
+        <div className="relative flex-shrink-0">
+          <div className="relative border-2 border-slate-100 rounded-xl shadow-inner overflow-hidden bg-slate-50 touch-none">
+            {image && showGuide && (
+              <img
+                src={image}
+                alt={letter}
+                className="absolute inset-0 w-full h-full object-contain opacity-20 pointer-events-none"
+              />
+            )}
 
-        {/* Stroke Order Overlay */}
-        {showStrokes && (
-          <div className="absolute inset-0 bg-white z-20 flex items-center justify-center">
-            {svgStrokeData ? (
-              <StrokeTraceAnimation strokeData={svgStrokeData} />
-            ) : (
-              <div className="relative w-full h-full flex items-center justify-center">
-                {/* Simulated Stroke Animation (Reveal) */}
-                {image ? (
-                  <>
-                    <div className="relative w-48 h-48">
-                      {/* Background Guide (Faint) */}
-                      <img
-                        src={image}
-                        alt="Guide"
-                        className="absolute inset-0 w-full h-full object-contain opacity-20 grayscale"
-                      />
-
-                      {/* Animated Reveal Layer (Step-by-Step) */}
-                      <motion.div
-                        initial={{ clipPath: "inset(0 100% 0 0)" }}
-                        animate={{
-                          clipPath: [
-                            "inset(0 100% 0 0)", // 0% - Start
-                            "inset(0 66% 0 0)",  // 20% - Step 1
-                            "inset(0 66% 0 0)",  // 35% - Pause
-                            "inset(0 33% 0 0)",  // 55% - Step 2
-                            "inset(0 33% 0 0)",  // 70% - Pause
-                            "inset(0 0 0 0)",    // 90% - Step 3 (Full)
-                            "inset(0 0 0 0)"     // 100% - Hold
-                          ]
-                        }}
-                        transition={{
-                          duration: 4,
-                          times: [0, 0.2, 0.35, 0.55, 0.7, 0.9, 1], // Explicit timing
-                          ease: "easeInOut",
-                          repeat: Infinity,
-                          repeatDelay: 1
-                        }}
-                        className="absolute inset-0 w-full h-full"
-                      >
-                        <img
-                          src={image}
-                          alt="Stroke Animation"
-                          className="w-full h-full object-contain drop-shadow-md"
-                        />
-                      </motion.div>
-                    </div>
-
-                    {/* Status Indicator */}
-                    <div className="absolute bottom-4 flex flex-col items-center gap-1">
-                      <p className="text-xs font-medium text-muted-foreground animate-pulse bg-white/80 px-2 py-1 rounded-full border border-border/50">
-                        Simulating Stroke Steps...
-                      </p>
-                      <div className="flex gap-1">
-                        <motion.div
-                          animate={{ opacity: [0.3, 1, 0.3] }}
-                          transition={{ duration: 1.5, repeat: Infinity, delay: 0 }}
-                          className="w-1.5 h-1.5 rounded-full bg-primary"
-                        />
-                        <motion.div
-                          animate={{ opacity: [0.3, 1, 0.3] }}
-                          transition={{ duration: 1.5, repeat: Infinity, delay: 0.5 }}
-                          className="w-1.5 h-1.5 rounded-full bg-primary"
-                        />
-                        <motion.div
-                          animate={{ opacity: [0.3, 1, 0.3] }}
-                          transition={{ duration: 1.5, repeat: Infinity, delay: 1.0 }}
-                          className="w-1.5 h-1.5 rounded-full bg-primary"
-                        />
-                      </div>
-                    </div>
-                  </>
+            {/* Stroke Order Overlay */}
+            {showStrokes && (
+              <div className="absolute inset-0 bg-white/95 z-20 flex items-center justify-center">
+                {svgStrokeData ? (
+                  <StrokeTraceAnimation strokeData={svgStrokeData} />
                 ) : (
-                  <p className="text-sm text-muted-foreground">No animation available</p>
+                  <SimpleLetterAnimation imageSrc={image || ""} />
                 )}
               </div>
             )}
-          </div>
-        )}
 
-        <canvas
-          ref={canvasRef}
-          className="touch-none cursor-crosshair"
-          onMouseDown={startDrawing}
-          onMouseMove={draw}
-          onMouseUp={stopDrawing}
-          onMouseLeave={stopDrawing}
-          onTouchStart={startDrawing}
-          onTouchMove={draw}
-          onTouchEnd={stopDrawing}
-        />
+            <canvas
+              ref={canvasRef}
+              className="touch-none cursor-crosshair block"
+              onMouseDown={startDrawing}
+              onMouseMove={draw}
+              onMouseUp={stopDrawing}
+              onMouseLeave={stopDrawing}
+              onTouchStart={startDrawing}
+              onTouchMove={draw}
+              onTouchEnd={stopDrawing}
+            />
+          </div>
+        </div>
+
+        {/* Right: Result & Stats */}
+        <div className="w-full md:w-72 flex flex-col">
+          <AnimatePresence mode="wait">
+            {!result ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="h-full flex flex-col items-center justify-center p-6 bg-slate-50 rounded-xl border-2 border-dashed border-slate-200 text-center"
+              >
+                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mb-3 shadow-sm text-slate-300">
+                  <Pen className="w-6 h-6" />
+                </div>
+                <p className="font-medium text-slate-600 mb-1">Your Turn</p>
+                <p className="text-xs text-slate-400">Trace the letter on the canvas carefully.</p>
+              </motion.div>
+            ) : (
+              (() => {
+                const score = result.score;
+                let colorClass = "";
+                let strokeColor = "";
+                let bgCircleClass = "";
+                let title = "";
+                let msg = "";
+
+                if (score >= 0.80) {
+                  colorClass = "bg-green-50 border-green-100 text-green-700";
+                  strokeColor = "#16a34a"; // green-600
+                  bgCircleClass = "bg-green-400";
+                  title = "Excellent!";
+                  msg = "You've mastered this stroke.";
+                } else if (score >= 0.50) {
+                  colorClass = "bg-yellow-50 border-yellow-100 text-yellow-700";
+                  strokeColor = "#ca8a04"; // yellow-600
+                  bgCircleClass = "bg-yellow-400";
+                  title = "Good Job!";
+                  msg = "You're getting there!";
+                } else {
+                  colorClass = "bg-red-50 border-red-100 text-red-700";
+                  strokeColor = "#dc2626"; // red-600
+                  bgCircleClass = "bg-red-400";
+                  title = "Keep Trying";
+                  msg = "Follow the guide and try again.";
+                }
+
+                return (
+                  <motion.div
+                    key="result"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className={`h-full flex flex-col items-center justify-center p-6 rounded-xl border-2 ${colorClass} text-center relative overflow-hidden`}
+                  >
+                    {/* Decorative background circle */}
+                    <div className={`absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full opacity-10 ${bgCircleClass}`} />
+
+                    <div className="relative w-32 h-32 flex items-center justify-center mb-4">
+                      <svg className="w-full h-full transform -rotate-90 drop-shadow-sm">
+                        <circle cx="64" cy="64" r="56" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-white/50" />
+                        <motion.circle
+                          initial={{ strokeDashoffset: 2 * Math.PI * 56 }}
+                          animate={{ strokeDashoffset: 2 * Math.PI * 56 - (result.score * 2 * Math.PI * 56) }}
+                          transition={{ duration: 1.2, ease: "easeOut" }}
+                          cx="64" cy="64" r="56"
+                          stroke={strokeColor}
+                          strokeWidth="8"
+                          fill="transparent"
+                          strokeDasharray={2 * Math.PI * 56}
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                      <div className="absolute flex flex-col items-center">
+                        <span className="text-3xl font-bold tracking-tight">
+                          {(result.score * 100).toFixed(0)}%
+                        </span>
+                      </div>
+                    </div>
+
+                    <h3 className="text-xl font-bold mb-1">
+                      {title}
+                    </h3>
+                    <p className="text-xs opacity-90 mb-4">
+                      {msg}
+                    </p>
+
+                    {onClose && (
+                      <Button
+                        onClick={onClose}
+                        variant="ghost"
+                        size="sm"
+                        className="text-xs hover:bg-white/50"
+                      >
+                        Close & Continue
+                      </Button>
+                    )}
+                  </motion.div>
+                );
+              })()
+            )}
+          </AnimatePresence>
+
+          {/* Small error toast inside right panel if needed, or stick below */}
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-2 p-2 bg-red-100 text-red-700 rounded text-xs flex items-center gap-1 justify-center"
+            >
+              <AlertTriangle className="w-3 h-3" />
+              {error}
+            </motion.div>
+          )}
+        </div>
       </div>
 
-      <div className="flex gap-4 mt-6 flex-wrap justify-center">
-        <Button onClick={clearCanvas} variant="secondary" className="gap-2">
-          <Eraser className="w-4 h-4" /> Clear
-        </Button>
-        <Button
-          onClick={() => setShowStrokes(!showStrokes)}
-          variant="outline"
-          className="gap-2 border-primary/20 text-primary hover:bg-primary/5"
-        >
-          {showStrokes ? "Hide Animation" : "Watch Animation"}
-        </Button>
-        <Button
-          onClick={() => setShowGuide(!showGuide)}
-          variant="outline"
-          className="gap-2 border-primary/20 text-primary hover:bg-primary/5"
-        >
-          {showGuide ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-          {showGuide ? "Hide Guide" : "Show Guide"}
-        </Button>
+      {/* Tools / Actions */}
+      <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between gap-2">
+        <div className="flex gap-2">
+          <Button onClick={() => setShowGuide(!showGuide)} variant="ghost" size="sm" className="text-slate-500 h-8 gap-1.5" title="Toggle Guide">
+            {showGuide ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            <span className="hidden sm:inline">Guide</span>
+          </Button>
+          <Button onClick={() => setShowStrokes(!showStrokes)} variant="ghost" size="sm" className="text-slate-500 h-8 gap-1.5" title="Toggle Animation">
+            {showStrokes ? <span className="font-bold">Stop</span> : <span className="font-bold">Play</span>}
+            <span className="hidden sm:inline">Animation</span>
+          </Button>
+          <Button onClick={clearCanvas} variant="ghost" size="sm" className="text-slate-500 h-8 gap-1.5" title="Clear Canvas">
+            <Eraser className="w-4 h-4" />
+            <span className="hidden sm:inline">Clear</span>
+          </Button>
+        </div>
+
         <Button
           onClick={checkWriting}
-          variant="default"
-          className="gap-2 bg-orange-500 hover:bg-orange-600"
+          size="sm"
+          className={`gap-2 min-w-[100px] shadow-sm transition-all ${isChecking ? "bg-slate-100 text-slate-400" : "bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white"
+            }`}
           disabled={isChecking}
         >
-          <Check className="w-4 h-4" /> {isChecking ? "Checking..." : "Check"}
-        </Button>
-        <Button onClick={tryAgain} variant="default" className="gap-2">
-          <RefreshCw className="w-4 h-4" /> Try Again
+          {isChecking ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+          {isChecking ? "Checking..." : "Check"}
         </Button>
       </div>
-
-      {/* Error Message */}
-      {error && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mt-4 flex items-center gap-2 text-orange-600 bg-orange-50 px-4 py-2 rounded-lg"
-        >
-          <AlertTriangle className="w-4 h-4" />
-          <span className="text-sm">{error}</span>
-        </motion.div>
-      )}
-
-      {/* Result Message */}
-      {result && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className={`mt-4 px-4 py-2 rounded-lg ${result.correct
-            ? "bg-green-50 text-green-700"
-            : "bg-red-50 text-red-700"
-            }`}
-        >
-          <p className="text-sm font-medium">
-            {result.correct
-              ? "✓ Correct! Great job!"
-              : `Predicted: ${result.predicted} (Expected: ${getExpectedTransliteration()})`}
-          </p>
-          <p className="text-xs mt-1">Confidence: {(result.score * 100).toFixed(1)}%</p>
-        </motion.div>
-      )}
     </div>
   );
 };

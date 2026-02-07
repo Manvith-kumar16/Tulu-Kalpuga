@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const axios = require('axios');
 
 dotenv.config();
 
@@ -12,57 +13,63 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Database Connection
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('Connected to MongoDB'))
-  .catch((err) => console.error('MongoDB connection error:', err));
+/* ================= DATABASE CONNECTION ================= */
 
-// Routes
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+  .then(() => console.log("✅ MongoDB Connected"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err.message));
+
+/* ================= ROUTES ================= */
+
 app.use('/api/auth', require('./routes/auth'));
-app.use('/api/auth', require('./routes/googleAuth')); // Mounts on /api/auth/google
-
+app.use('/api/auth', require('./routes/googleAuth'));
 app.use('/api/progress', require('./routes/progress'));
 
-
 app.get('/', (req, res) => {
-  res.send('Tulu Kalpuga Backend Running');
+  res.send('🚀 Tulu Kalpuga Backend Running');
 });
 
-// Proxy to Python ML Service
+/* ================= ML PROXY ================= */
+
 app.post('/predict', async (req, res) => {
   try {
-    // Assuming Node 18+ has native fetch. If not, use axios or node-fetch.
-    // Since this is a modern project, fetch is likely available.
-    const response = await fetch("http://127.0.0.1:5001/predict", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(req.body)
-    });
+    const response = await axios.post(
+      "http://127.0.0.1:5001/predict",
+      req.body,
+      { headers: { "Content-Type": "application/json" } }
+    );
 
-    if (!response.ok) {
-      const errText = await response.text();
-      return res.status(response.status).send(errText);
+    res.json(response.data);
+
+  } catch (error) {
+    console.error("❌ ML Proxy Error:", error.message);
+    if (error.response) {
+      console.error("ML Response Data:", error.response.data);
     }
 
-    const data = await response.json();
-    res.json(data);
-  } catch (error) {
-    console.error("ML Proxy Error:", error);
     res.status(500).json({
-      error: "ML Service unavailable. Please ensure the Python backend is running."
+      success: false,
+      message: "ML Service unavailable. Start Python ML server."
     });
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+/* ================= ERROR HANDLER ================= */
 
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  console.error("🔥 Server Error:", err.stack);
+
   res.status(500).json({
     success: false,
-    message: "Server error"
+    message: "Internal Server Error"
   });
 });
 
+/* ================= START SERVER ================= */
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});

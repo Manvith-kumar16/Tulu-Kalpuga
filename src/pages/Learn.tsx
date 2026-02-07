@@ -9,6 +9,8 @@ import Footer from "@/components/Footer";
 import { AudioPlayer } from "@/components/AudioPlayer";
 import { getAudioForLetter } from "@/data/tuluLetterAudio";
 import WritingPractice from "./WritingPractice";
+import { letterToTransliteration } from "@/data/tuluLetters";
+
 
 // ✅ Tulu Lipi letters
 const vowels = [
@@ -189,9 +191,10 @@ const Learn = () => {
     if (letterData) {
       setSelectedLetterData({
         letter: letterData.letter,
-        transliteration: letterData.transliteration,
+        transliteration: letterToTransliteration[letterData.letter],
         image: letterData.image,
       });
+
     }
   };
 
@@ -286,22 +289,17 @@ const Learn = () => {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="bg-white rounded-2xl p-6 shadow-2xl relative max-w-md w-full"
+              className="bg-white rounded-2xl shadow-2xl relative w-auto max-w-[95vw] overflow-hidden"
             >
-              <button
-                onClick={() => {
-                  setSelectedLetter(null);
-                  setSelectedLetterData(null);
-                }}
-                className="absolute top-2 right-2 text-gray-600 hover:text-black"
-              >
-                ✖
-              </button>
               {selectedLetterData && (
                 <WritingPractice
                   letter={selectedLetterData.letter}
                   image={selectedLetterData.image}
                   transliteration={selectedLetterData.transliteration}
+                  onClose={() => {
+                    setSelectedLetter(null);
+                    setSelectedLetterData(null);
+                  }}
                 />
               )}
             </motion.div>

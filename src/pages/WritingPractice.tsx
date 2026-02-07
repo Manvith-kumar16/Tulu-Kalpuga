@@ -14,8 +14,8 @@ interface WritingPracticeProps {
   onClose?: () => void;
 }
 
-// ML Backend URL - adjust if needed
-const ML_BACKEND_URL = "https://tulu-kalpuga-ml.onrender.com";
+// Node.js Backend URL (Proxies to ML)
+const ML_BACKEND_URL = "https://tulu-kalpuga.onrender.com";
 
 // Mapping from Tulu letters to transliterations (used as fallback)
 import { letterToTransliteration } from "@/data/tuluLetters";

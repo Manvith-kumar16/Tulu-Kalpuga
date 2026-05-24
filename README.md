@@ -42,6 +42,11 @@ The user interface is designed to be clean, modern, and easy for beginners.
 
 ---
 
+## Dataset Augmentation
+GitHub Link : https://github.com/Manvith-kumar16/OpenCV-based-data-augmentation-for-Tulu-handwritten-dataset.git
+
+---
+
 ## 📚 Features:
 
 • Complete Tulu alphabet learning  
@@ -129,5 +134,4 @@ Submit a pull request for review.
 
 ## 📄 License:
 Licensed under the MIT License. 
-
 

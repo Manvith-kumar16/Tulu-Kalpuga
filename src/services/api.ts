@@ -1,6 +1,7 @@
 import { toast } from "sonner";
 
-const API_URL = 'https://tulu-kalpuga.onrender.com/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://tulu-kalpuga.onrender.com/api';
+console.log("URLLLL", API_URL);
 
 interface RequestOptions extends RequestInit {
     headers?: Record<string, string>;

@@ -1,7 +1,8 @@
 flask
 flask-cors
-tensorflow>=2.12
+tensorflow==2.15.0
 opencv-python-headless
 pillow
-numpy
+numpy<2.0
 scikit-image
+protobuf==3.20.3

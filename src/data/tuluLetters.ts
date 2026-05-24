@@ -2,14 +2,14 @@ export const letterToTransliteration: Record<string, string> = {
   // Vowels
   "ಅ": "a",
   "ಆ": "aa",
-  "ಇ": "i",
-  "ಈ": "ii",
+  "ಇ": "e",   // Model predicts 'e' for this letter
+  "ಈ": "ee",  // Model predicts 'ee' for this letter
   "ಉ": "u",
   "ಊ": "uu",
   "ಋ": "ru",
   "ೠ": "rruu",
-  "ಎ": "e",
-  "ಏ": "ee",
+  "ಎ": "i",   // Model predicts 'i' for this letter (inferred from swap)
+  "ಏ": "ii",  // Model predicts 'ii' for this letter (inferred from swap)
   "ಐ": "ai",
   "ಒ": "o",
   "ಓ": "oo",
@@ -22,21 +22,21 @@ export const letterToTransliteration: Record<string, string> = {
   "ಖ": "kha",
   "ಗ": "ga",
   "ಘ": "gha",
-  "ಙ": "nga",
+  "ಙ": "nga", // Model: nga (Fixed from nza)
   "ಚ": "cha",
   "ಛ": "chha",
   "ಜ": "ja",
   "ಝ": "jha",
   "ಞ": "nya",
-  "ಟ": "tta",
-  "ಠ": "thha",
-  "ಡ": "dda",
-  "ಢ": "ddha",
+  "ಟ": "ta",
+  "ಠ": "tta",
+  "ಡ": "da",
+  "ಢ": "dda",
   "ಣ": "nna",
-  "ತ": "ta",
-  "ಥ": "tha",
-  "ದ": "da",
-  "ಧ": "dha",
+  "ತ": "tha",
+  "ಥ": "thha",
+  "ದ": "dha",
+  "ಧ": "ddha", // Model: ddha (Fixed from dhha)
   "ನ": "na",
   "ಪ": "pa",
   "ಫ": "pha",
@@ -52,8 +52,8 @@ export const letterToTransliteration: Record<string, string> = {
   "ಸ": "sa",
   "ಹ": "ha",
   "ಳ": "lla",
-  "ೞ": "lla", // Approximate/Fallback (Model missing 'zha')
-  "ಱ": "ra",  // Approximate/Fallback (Model missing 'rra')
+  "ೞ": "lla", // Approximate (Model missing 'zha')
+  "ಱ": "ra",  // Approximate (Model missing 'rra')
 
   // Numbers (Model may not support these yet, keeping straightforward mapping)
   "೦": "0",

@@ -10,7 +10,7 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 
 @app.route("/")
 def home():
-    return jsonify({"message": "Tulu Kalpuga ML API running 🚀"})
+    return jsonify({"message": "Tulu Kalpuga ML API running"})
 
 
 @app.route("/predict", methods=["POST"])
@@ -64,12 +64,19 @@ if __name__ == "__main__":
     # Preload model so first request is fast
     try:
         load_model_and_classes()
-        print("✅ Model preloaded.")
+        print("Model preloaded.")
     except Exception as e:
-        print("⚠️ Model not loaded at start:", e)
+        print("Model not loaded at start:", e)
         print("Start server and call /predict after training model is created.")
 
-    # IMPORTANT: Render requires PORT env variable
-    port = int(os.environ.get("PORT", 10000))
+    # Use ML_PORT if defined, otherwise PORT (defaulting to 10000)
+    # This prevents conflict with main backend on port 5000
+    port = int(os.environ.get("ML_PORT", os.environ.get("PORT", 10000)))
+    
+    # If PORT is 5000 (likely from root .env), default back to 10000 for ML
+    if port == 5000 and not os.environ.get("ML_PORT"):
+        print("Detected PORT 5000 (likely from main backend env). Switching ML to 10000.")
+        port = 10000
 
+    print(f"ML Server starting on port {port}")
     app.run(host="0.0.0.0", port=port)

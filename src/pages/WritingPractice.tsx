@@ -15,7 +15,8 @@ interface WritingPracticeProps {
 }
 
 // Node.js Backend URL (Proxies to ML)
-const ML_BACKEND_URL = "https://tulu-kalpuga.onrender.com";
+// Node.js Backend URL (Proxies to ML)
+const ML_BACKEND_URL = (import.meta.env.VITE_API_URL || "https://tulu-kalpuga.onrender.com/api").replace("/api", "");
 
 // Mapping from Tulu letters to transliterations (used as fallback)
 import { letterToTransliteration } from "@/data/tuluLetters";
@@ -144,21 +145,40 @@ const WritingPractice = ({ letter, image, transliteration, onClose }: WritingPra
     setResult(null);
 
     try {
-      // 2. Process Image: Flatten to White Background first, then Invert for Model
+      // 2. Process Image: Crop to content + Square Pad (Preserves Aspect Ratio)
+      const contentWidth = maxX - minX;
+      const contentHeight = maxY - minY;
+      const maxDim = Math.max(contentWidth, contentHeight);
+      const padding = 20; // Padding around the character
+      const squareSize = maxDim + (padding * 2);
+
       const tempCanvas = document.createElement("canvas");
-      tempCanvas.width = width;
-      tempCanvas.height = height;
+      tempCanvas.width = squareSize;
+      tempCanvas.height = squareSize;
       const tCtx = tempCanvas.getContext("2d");
 
       if (!tCtx) throw new Error("Could not create temp canvas");
 
-      // A. Create Black-on-White version first (Standard Drawing)
+      // Fill White Background
       tCtx.fillStyle = "#ffffff";
-      tCtx.fillRect(0, 0, width, height);
-      tCtx.drawImage(canvas, 0, 0);
+      tCtx.fillRect(0, 0, squareSize, squareSize);
 
-      // B. Invert Colors (Make it White-on-Black)
-      // Standard ML models (like MNIST) usually expect white text on black background.
+      // Draw the content centered in the square
+      // Source: The bounding box on original canvas
+      // Dest: Centered on temp canvas
+      const destX = padding + (maxDim - contentWidth) / 2;
+      const destY = padding + (maxDim - contentHeight) / 2;
+
+      tCtx.drawImage(
+        canvas,
+        minX, minY, contentWidth, contentHeight, // Source rect
+        destX, destY, contentWidth, contentHeight // Dest rect
+      );
+
+      // Standard ML models usually expect the image as-is (Black on White)
+      // unless specifically trained on inverted MNIST-style data.
+      // We are sending the original Black-on-White canvas data.
+      /*
       const imgData = tCtx.getImageData(0, 0, width, height);
       const data = imgData.data;
 
@@ -171,6 +191,7 @@ const WritingPractice = ({ letter, image, transliteration, onClose }: WritingPra
       }
 
       tCtx.putImageData(imgData, 0, 0);
+      */
 
       const base64Image = tempCanvas.toDataURL("image/png");
 
@@ -200,8 +221,8 @@ const WritingPractice = ({ letter, image, transliteration, onClose }: WritingPra
       let baseScore = responseData.score || 0;
       let finalScore = Math.min(baseScore + 0.20, 0.96);
 
-      // User requested: Above 85% should always be green (correct)
-      const isCorrect = responseData.correct || finalScore >= 0.85;
+      // Strict correctness check: Must match expected character
+      const isCorrect = responseData.correct === true;
 
       setResult({
         correct: isCorrect,
@@ -316,86 +337,46 @@ const WritingPractice = ({ letter, image, transliteration, onClose }: WritingPra
                 <p className="text-xs text-slate-400">Trace the letter on the canvas carefully.</p>
               </motion.div>
             ) : (
-              (() => {
-                const score = result.score;
-                let colorClass = "";
-                let strokeColor = "";
-                let bgCircleClass = "";
-                let title = "";
-                let msg = "";
+              <motion.div
+                key="result"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className={`h-full flex flex-col items-center justify-center p-6 rounded-xl border-2 ${result.correct
+                  ? "bg-green-50 border-green-100 text-green-700"
+                  : "bg-red-50 border-red-100 text-red-700"
+                  } text-center relative overflow-hidden`}
+              >
+                <h3 className="text-2xl font-bold mb-4">
+                  {result.correct ? "✅ Correct!" : "❌ Incorrect"}
+                </h3>
 
-                if (score >= 0.80) {
-                  colorClass = "bg-green-50 border-green-100 text-green-700";
-                  strokeColor = "#16a34a"; // green-600
-                  bgCircleClass = "bg-green-400";
-                  title = "Excellent!";
-                  msg = "You've mastered this stroke.";
-                } else if (score >= 0.50) {
-                  colorClass = "bg-yellow-50 border-yellow-100 text-yellow-700";
-                  strokeColor = "#ca8a04"; // yellow-600
-                  bgCircleClass = "bg-yellow-400";
-                  title = "Good Job!";
-                  msg = "You're getting there!";
-                } else {
-                  colorClass = "bg-red-50 border-red-100 text-red-700";
-                  strokeColor = "#dc2626"; // red-600
-                  bgCircleClass = "bg-red-400";
-                  title = "Keep Trying";
-                  msg = "Follow the guide and try again.";
-                }
+                <div className="bg-white/50 rounded-lg p-4 mb-4 w-full text-center shadow-sm">
+                  <p className="text-sm opacity-80 mb-1">You wrote:</p>
+                  <p className="text-3xl font-bold">{result.predicted || "?"}</p>
+                </div>
 
-                return (
-                  <motion.div
-                    key="result"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className={`h-full flex flex-col items-center justify-center p-6 rounded-xl border-2 ${colorClass} text-center relative overflow-hidden`}
+                {!result.correct && (
+                  <div className="bg-white/50 rounded-lg p-4 mb-4 w-full text-center shadow-sm">
+                    <p className="text-sm opacity-80 mb-1">Expected:</p>
+                    <p className="text-xl font-bold">{getExpectedTransliteration()}</p>
+                  </div>
+                )}
+
+                <p className="text-lg opacity-90 mb-6 font-medium">
+                  {result.correct ? "Great job!" : "Try again."}
+                </p>
+
+                {onClose && (
+                  <Button
+                    onClick={onClose}
+                    variant="ghost"
+                    size="sm"
+                    className="text-xs hover:bg-white/50"
                   >
-                    {/* Decorative background circle */}
-                    <div className={`absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full opacity-10 ${bgCircleClass}`} />
-
-                    <div className="relative w-32 h-32 flex items-center justify-center mb-4">
-                      <svg className="w-full h-full transform -rotate-90 drop-shadow-sm">
-                        <circle cx="64" cy="64" r="56" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-white/50" />
-                        <motion.circle
-                          initial={{ strokeDashoffset: 2 * Math.PI * 56 }}
-                          animate={{ strokeDashoffset: 2 * Math.PI * 56 - (result.score * 2 * Math.PI * 56) }}
-                          transition={{ duration: 1.2, ease: "easeOut" }}
-                          cx="64" cy="64" r="56"
-                          stroke={strokeColor}
-                          strokeWidth="8"
-                          fill="transparent"
-                          strokeDasharray={2 * Math.PI * 56}
-                          strokeLinecap="round"
-                        />
-                      </svg>
-                      <div className="absolute flex flex-col items-center">
-                        <span className="text-3xl font-bold tracking-tight">
-                          {(result.score * 100).toFixed(0)}%
-                        </span>
-                      </div>
-                    </div>
-
-                    <h3 className="text-xl font-bold mb-1">
-                      {title}
-                    </h3>
-                    <p className="text-xs opacity-90 mb-4">
-                      {msg}
-                    </p>
-
-                    {onClose && (
-                      <Button
-                        onClick={onClose}
-                        variant="ghost"
-                        size="sm"
-                        className="text-xs hover:bg-white/50"
-                      >
-                        Close & Continue
-                      </Button>
-                    )}
-                  </motion.div>
-                );
-              })()
+                    Close & Continue
+                  </Button>
+                )}
+              </motion.div>
             )}
           </AnimatePresence>
 

@@ -15,7 +15,9 @@ app.use(cors({
   origin: [
     "https://tulu-kalpuga.vercel.app",
     "https://tulukalpuga.vercel.app",
-    "http://localhost:5173"
+    "http://localhost:5173",
+    "http://localhost:8080",
+    "http://127.0.0.1:8080"
   ],
   credentials: true
 }));
@@ -43,7 +45,7 @@ app.get('/', (req, res) => {
 
 /* ================= ML PROXY (FIXED URL) ================= */
 
-const ML_URL = "https://tulu-kalpuga-ml.onrender.com/predict";
+const ML_URL = process.env.ML_URL || "https://tulu-kalpuga-ml.onrender.com/predict";
 
 app.post('/predict', async (req, res) => {
   try {

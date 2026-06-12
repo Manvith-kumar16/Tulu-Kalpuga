@@ -320,6 +320,7 @@ const Practice = () => {
                           letter={currentLetter.letter}
                           image={currentLetter.image}
                           transliteration={letterToTransliteration[currentLetter.letter]}
+                          hideCheck={selectedCategory === "numbers"}
                         />
                       
                       </motion.div>

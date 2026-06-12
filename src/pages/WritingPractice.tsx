@@ -12,6 +12,7 @@ interface WritingPracticeProps {
   image?: string;
   transliteration?: string;
   onClose?: () => void;
+  hideCheck?: boolean;
 }
 
 // Node.js Backend URL (Proxies to ML)
@@ -24,7 +25,7 @@ import { letterToTransliteration } from "@/data/tuluLetters";
 import { transliterationToModelLabel, modelLabelToTransliteration } from "@/data/tuluModelLabels";
 
 
-const WritingPractice = ({ letter, image, transliteration, onClose }: WritingPracticeProps) => {
+const WritingPractice = ({ letter, image, transliteration, onClose, hideCheck }: WritingPracticeProps) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [context, setContext] = useState<CanvasRenderingContext2D | null>(null);
@@ -351,7 +352,8 @@ const WritingPractice = ({ letter, image, transliteration, onClose }: WritingPra
           </div>
         </div>
 
-        {/* Right: Result & Stats */}
+        {/* Right: Result & Stats (Hidden if hideCheck is true) */}
+        {!hideCheck && (
         <div className="w-full md:w-72 flex flex-col">
           <AnimatePresence mode="wait">
             {!result ? (
@@ -422,6 +424,7 @@ const WritingPractice = ({ letter, image, transliteration, onClose }: WritingPra
             </motion.div>
           )}
         </div>
+        )}
       </div>
 
       {/* Tools / Actions */}
@@ -441,6 +444,7 @@ const WritingPractice = ({ letter, image, transliteration, onClose }: WritingPra
           </Button>
         </div>
 
+        {!hideCheck && (
         <Button
           onClick={checkWriting}
           size="sm"
@@ -451,6 +455,7 @@ const WritingPractice = ({ letter, image, transliteration, onClose }: WritingPra
           {isChecking ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
           {isChecking ? "Checking..." : "Check"}
         </Button>
+        )}
       </div>
     </div>
   );

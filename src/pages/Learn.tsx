@@ -296,6 +296,7 @@ const Learn = () => {
                   letter={selectedLetterData.letter}
                   image={selectedLetterData.image}
                   transliteration={selectedLetterData.transliteration}
+                  hideCheck={numbers.some(n => n.letter === selectedLetterData.letter)}
                   onClose={() => {
                     setSelectedLetter(null);
                     setSelectedLetterData(null);

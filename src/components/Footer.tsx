@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
-import { Sparkles, Heart, Github, Twitter, Instagram, Send } from "lucide-react";
+import { Heart, Github, Linkedin, Instagram, Send } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { TuluLogo } from "./TuluLogo";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -37,9 +38,9 @@ const Footer = () => {
   ];
 
   const socialLinks = [
-    { icon: Github, href: "#", label: "GitHub" },
-    { icon: Twitter, href: "#", label: "Twitter" },
-    { icon: Instagram, href: "#", label: "Instagram" },
+    { icon: Github, href: "https://github.com/Manvith-kumar16", label: "GitHub" },
+    { icon: Linkedin, href: "https://www.linkedin.com/in/manvith-kumar16/", label: "LinkedIn" },
+    { icon: Instagram, href: "https://www.instagram.com/manvith__kumar_?igsh=bjZnZTlvcGZ4cmd3", label: "Instagram" },
   ];
 
   return (
@@ -54,11 +55,9 @@ const Footer = () => {
           {/* Brand Column */}
           <div className="lg:col-span-4 space-y-6">
             <Link to="/" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center border border-primary/20 group-hover:bg-primary/20 transition-colors">
-                <Sparkles className="w-5 h-5 text-primary" />
-              </div>
+              <TuluLogo className="w-10 h-10 transition-transform duration-300 group-hover:scale-105" />
               <span className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                TuluLip
+                Tulu Kalpuga
               </span>
             </Link>
             <p className="text-muted-foreground leading-relaxed max-w-sm">
@@ -121,7 +120,7 @@ const Footer = () => {
 
         {/* Bottom Bar */}
         <div className="border-t border-border pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
-          <p>&copy; {currentYear} TuluLip. All rights reserved.</p>
+          <p>&copy; {currentYear} Tulu Kalpuga. All rights reserved.</p>
 
           <motion.div
             className="flex items-center gap-1"

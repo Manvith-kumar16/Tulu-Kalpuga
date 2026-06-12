@@ -64,10 +64,7 @@ const Navigation = () => {
 
           {/* 🌟 Logo Section */}
           <Link to="/" className="flex items-center gap-2 group relative z-50">
-            <div className="relative w-10 h-10 flex items-center justify-center">
-              <div className="absolute inset-0 bg-primary/20 rounded-xl rotate-3 group-hover:rotate-6 transition-transform duration-300" />
-              <TuluLogo className="w-10 h-10 relative z-10" />
-            </div>
+            <TuluLogo className="w-10 h-10 transition-transform duration-300 group-hover:scale-105" />
             <span className="text-xl font-bold bg-gradient-to-r from-primary to-red-600 bg-clip-text text-transparent hidden sm:block">
               Tulu Kalpuga
             </span>

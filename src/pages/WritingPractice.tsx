@@ -20,6 +20,8 @@ const ML_BACKEND_URL = (import.meta.env.VITE_API_URL || "https://tulu-kalpuga.on
 
 // Mapping from Tulu letters to transliterations (used as fallback)
 import { letterToTransliteration } from "@/data/tuluLetters";
+// ML model label mappings (model's internal labels ≠ human transliterations)
+import { transliterationToModelLabel, modelLabelToTransliteration } from "@/data/tuluModelLabels";
 
 
 const WritingPractice = ({ letter, image, transliteration, onClose }: WritingPracticeProps) => {
@@ -85,6 +87,17 @@ const WritingPractice = ({ letter, image, transliteration, onClose }: WritingPra
     return letterToTransliteration[letter] || "";
   };
 
+  // Returns the model's internal class label for a given human transliteration.
+  // Falls back to the raw transliteration if no mapping is defined (consonants, etc.).
+  const getModelLabel = (humanTranslit: string): string => {
+    return transliterationToModelLabel[humanTranslit] ?? humanTranslit;
+  };
+
+  // Converts a raw model prediction label back to a human-readable transliteration.
+  const friendlyPrediction = (modelLabel: string): string => {
+    return modelLabelToTransliteration[modelLabel] ?? modelLabel;
+  };
+
   const checkWriting = async () => {
     if (!canvasRef.current) return;
 
@@ -133,12 +146,15 @@ const WritingPractice = ({ letter, image, transliteration, onClose }: WritingPra
       return;
     }
 
-    const expected = getExpectedTransliteration();
+    const humanExpected = getExpectedTransliteration();
 
-    if (!expected) {
+    if (!humanExpected) {
       setError("Could not determine expected transliteration for this letter.");
       return;
     }
+
+    // Translate the human-readable transliteration to the model's internal label
+    const modelExpected = getModelLabel(humanExpected);
 
     setIsChecking(true);
     setError(null);
@@ -195,7 +211,7 @@ const WritingPractice = ({ letter, image, transliteration, onClose }: WritingPra
 
       const base64Image = tempCanvas.toDataURL("image/png");
 
-      // Send to ML backend
+      // Send to ML backend – use the model's internal label as the expected class
       const response = await fetch(`${ML_BACKEND_URL}/predict`, {
         method: "POST",
         headers: {
@@ -203,7 +219,7 @@ const WritingPractice = ({ letter, image, transliteration, onClose }: WritingPra
         },
         body: JSON.stringify({
           image: base64Image,
-          expected: expected,
+          expected: modelExpected,
         }),
       });
 
@@ -221,12 +237,26 @@ const WritingPractice = ({ letter, image, transliteration, onClose }: WritingPra
       let baseScore = responseData.score || 0;
       let finalScore = Math.min(baseScore + 0.20, 0.96);
 
-      // Strict correctness check: Must match expected character
-      const isCorrect = responseData.correct === true;
+      // Correctness: the server compares predicted vs modelExpected.
+      // We also do a client-side check in case the server doesn't know our
+      // remapped expected label.
+      const rawPredicted: string = responseData.predicted || "";
+      const isCorrect =
+        responseData.correct === true ||
+        rawPredicted.trim() === modelExpected.trim();
+
+      // Display logic:
+      //   • Correct  → show the human transliteration they were practising.
+      //     (Multiple letters can share a model label, so converting the raw
+      //      label back would show the wrong name.)
+      //   • Incorrect → show what the model thought they drew (friendly form).
+      const displayPredicted = isCorrect
+        ? humanExpected
+        : friendlyPrediction(rawPredicted);
 
       setResult({
         correct: isCorrect,
-        predicted: responseData.predicted || "",
+        predicted: displayPredicted,
         score: finalScore,
       });
 
